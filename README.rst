@@ -12,7 +12,7 @@ This can be built like any other CMake_ project.  For example::
   cmake ../CastXMLSuperbuild
   make
 
-The resulting `castxml` will be locatedt at
+The resulting `castxml` executable will be located at
 `CastXMLSuperbuild-build/llvm/bin/castxml`.
 
 .. _CastXML: https://github.com/CastXML/CastXML

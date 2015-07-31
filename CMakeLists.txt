@@ -17,7 +17,7 @@ include(ExternalProject)
 
 set(llvm_version 3.6.0)
 ExternalProject_Add(llvm
-  # This is the upstream source code repackages in a .tar.gz for
+  # This is the upstream source code repackaged in a .tar.gz for
   # compatibility with older CMake. Also the tests/ and doc/ directories
   # are removed to remove symlink files and save space.
   URL http://midas3.kitware.com/midas/download/bitstream/454187/llvm-${llvm_version}.src.tar.gz
@@ -36,7 +36,7 @@ ExternalProject_Add(llvm
 
 
 ExternalProject_Add(clang
-  # This is the upstream source code repackages in a .tar.gz for
+  # This is the upstream source code repackaged in a .tar.gz for
   # compatibility with older CMake. Also the tests/ and doc/ directories
   # are removed to remove symlink files and save space.
   URL http://midas3.kitware.com/midas/download/bitstream/454206/cfe-${llvm_version}.src.tar.gz
@@ -54,7 +54,7 @@ ExternalProject_Add(clang
     -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
     -DCLANG_INCLUDE_DOCS:BOOL=OFF
     -DCLANG_INCLUDE_TESTS:BOOL=OFF
-    -DLLVM_CONFIG:PATH=${CMAKE_CURRENT_BINARY_DIR}/llvm/bin/llvm-config${exe}
+    -DLLVM_CONFIG:PATH=${CMAKE_CURRENT_BINARY_DIR}/llvm/bin/llvm-config
   INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR}/llvm
   )
 
