@@ -15,13 +15,13 @@ endif()
 include(ExternalProject)
 
 
-set(llvm_version 3.6.0)
+set(llvm_version 3.7.0rc1)
 ExternalProject_Add(llvm
   # This is the upstream source code repackaged in a .tar.gz for
-  # compatibility with older CMake. Also the tests/ and doc/ directories
-  # are removed to remove symlink files and save space.
-  URL http://midas3.kitware.com/midas/download/bitstream/454187/llvm-${llvm_version}.src.tar.gz
-  URL_MD5 53dfa661317af324838b3c13c6e58770
+  # compatibility with older CMake. Also the tests/ directory
+  # removed to save space.
+  URL http://midas3.kitware.com/midas/download/bitstream/456383/llvm-${llvm_version}.src.tar.gz
+  URL_MD5 e0c06777f07b85db4ffce4c4e8b2939d
   CMAKE_ARGS -Wno-dev
   CMAKE_GENERATOR "${CMAKE_GENERATOR}"
   CMAKE_CACHE_ARGS
@@ -37,10 +37,10 @@ ExternalProject_Add(llvm
 
 ExternalProject_Add(clang
   # This is the upstream source code repackaged in a .tar.gz for
-  # compatibility with older CMake. Also the tests/ and doc/ directories
-  # are removed to remove symlink files and save space.
-  URL http://midas3.kitware.com/midas/download/bitstream/454206/cfe-${llvm_version}.src.tar.gz
-  URL_MD5 d6da7200e9ee9f956565a15242e5a5fe
+  # compatibility with older CMake. Also the tests/ directory
+  # removed to save space.
+  URL http://midas3.kitware.com/midas/download/bitstream/456384/cfe-${llvm_version}.src.tar.gz
+  URL_MD5 73afc5b99b24f6d1451765dbdc7f44d5
   DEPENDS llvm
   SOURCE_DIR ${CMAKE_CURRENT_BINARY_DIR}/cfe-${llvm_version}
   CMAKE_ARGS -Wno-dev
