@@ -59,6 +59,9 @@ ExternalProject_Add(clang
   )
 
 
+if(CMAKE_COMPILER_IS_GNUCXX AND CMAKE_SYSTEM_NAME MATCHES "Linux")
+  set(extra_flags "-static-libstdc++")
+endif()
 set(CastXML_GIT_TAG master CACHE STRING "CastXML Git revision.")
 ExternalProject_Add(castxml
   GIT_REPOSITORY https://github.com/CastXML/CastXML.git
@@ -68,7 +71,7 @@ ExternalProject_Add(castxml
   CMAKE_GENERATOR "${CMAKE_GENERATOR}"
   CMAKE_CACHE_ARGS
     -DCMAKE_CXX_COMPILER:FILEPATH=${CMAKE_CXX_COMPILER}
-    "-DCMAKE_CXX_FLAGS:STRING=${CMAKE_CXX_FLAGS} -w"
+    "-DCMAKE_CXX_FLAGS:STRING=${CMAKE_CXX_FLAGS} -w ${extra_flags}"
     -DCMAKE_C_COMPILER:FILEPATH=${CMAKE_C_COMPILER}
     "-DCMAKE_C_FLAGS:STRING=${CMAKE_C_FLAGS} -w"
     -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
