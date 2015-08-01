@@ -1,0 +1,14 @@
+machine:
+  services:
+    - docker
+
+dependencies:
+  override:
+    - docker info
+    - docker pull thewtex/centos-build
+
+test:
+  override:
+    - mkdir ~/CastXMLSuperbuild-build
+    - docker run -v ~/CastXMLSuperbuild:/usr/src/CastXMLSuperbuild -v ~/CastXMLSuperbuild-build:/usr/src/CastXMLSuperbuild-build thewtex/centos-build /usr/src/CastXMLSuperbuild/centos-build.sh
+    - mv ~/CastXMLSuperbuild-build/castxml-linux.tar.gz $CIRCLE_ARTIFACTS
