@@ -19,4 +19,3 @@ make VERBOSE=1 || die "Build failed"
 
 mv castxml castxml-linux
 tar cvf castxml-linux.tar castxml-linux
-gzip -9 castxml-linux.tar
