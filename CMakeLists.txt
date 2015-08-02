@@ -21,6 +21,9 @@ if(NINJA_EXECUTABLE)
   set(verbose_command BUILD_COMMAND ${NINJA_EXECUTABLE} -v)
 endif()
 
+if(CMAKE_TOOLCHAIN_FILE)
+  set(toolchain "-DCMAKE_TOOLCHAIN_FILE:PATH=${CMAKE_TOOLCHAIN_FILE}")
+endif()
 
 set(llvm_version 3.6.0)
 ExternalProject_Add(llvm
@@ -38,6 +41,7 @@ ExternalProject_Add(llvm
     "-DCMAKE_C_FLAGS:STRING=${CMAKE_C_FLAGS} -w"
     -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
     -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+    ${toolchain}
   ${verbose_command}
   LOG_BUILD 0
   INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR}/llvm
@@ -64,6 +68,7 @@ ExternalProject_Add(clang
     -DCLANG_INCLUDE_DOCS:BOOL=OFF
     -DCLANG_INCLUDE_TESTS:BOOL=OFF
     -DLLVM_CONFIG:PATH=${CMAKE_CURRENT_BINARY_DIR}/llvm/bin/llvm-config${exe}
+    ${toolchain}
   ${verbose_command}
   LOG_BUILD 0
   INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR}/llvm
@@ -88,6 +93,7 @@ ExternalProject_Add(castxml
     -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
     -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
     -DLLVM_DIR:PATH=${CMAKE_CURRENT_BINARY_DIR}/llvm/share/llvm/cmake
+    ${toolchain}
   ${verbose_command}
   LOG_BUILD 0
   INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR}/castxml

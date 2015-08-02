@@ -17,5 +17,5 @@ cmake \
   /usr/src/CastXMLSuperbuild || die "CMake configuration failed"
 make VERBOSE=1 || die "Build failed"
 
-mv castxml castxml-linux
-tar cvf castxml-linux.tar castxml-linux
+tar cvf castxml-linux.tar castxml
+file castxml-linux.tar
