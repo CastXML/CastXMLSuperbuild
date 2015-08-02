@@ -11,4 +11,4 @@ test:
   override:
     - mkdir ~/CastXMLSuperbuild-build
     - docker run -v ~/CastXMLSuperbuild:/usr/src/CastXMLSuperbuild -v ~/CastXMLSuperbuild-build:/usr/src/CastXMLSuperbuild-build thewtex/centos-build /usr/src/CastXMLSuperbuild/centos-build.sh
-    - mv ~/CastXMLSuperbuild-build/castxml-linux.tar $CIRCLE_ARTIFACTS
+    - mv ~/CastXMLSuperbuild-build/castxml-linux.tar $CIRCLE_ARTIFACTS/castxml-linux.tar.gz

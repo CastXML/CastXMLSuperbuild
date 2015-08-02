@@ -18,4 +18,3 @@ cmake \
 make VERBOSE=1 || die "Build failed"
 
 tar cvf castxml-linux.tar castxml
-file castxml-linux.tar
