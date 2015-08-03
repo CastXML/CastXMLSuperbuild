@@ -14,6 +14,12 @@ endif()
 
 include(ExternalProject)
 
+find_program(NINJA_EXECUTABLE ninja)
+if(NINJA_EXECUTABLE)
+  set(CMAKE_GENERATOR "Ninja")
+  # Make Ninja verbose so CircleCI does not think the build has halted.
+  set(verbose_command BUILD_COMMAND ${NINJA_EXECUTABLE} -v)
+endif()
 
 set(llvm_version 3.7.0rc1)
 ExternalProject_Add(llvm
@@ -34,6 +40,8 @@ ExternalProject_Add(llvm
     -DLLVM_INCLUDE_TESTS:BOOL=OFF
     -DLLVM_INCLUDE_EXAMPLES:BOOL=OFF
     -DLLVM_INCLUDE_DOCS:BOOL=OFF
+  ${verbose_command}
+  LOG_BUILD 0
   INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR}/llvm
   )
 
@@ -58,10 +66,15 @@ ExternalProject_Add(clang
     -DCLANG_INCLUDE_DOCS:BOOL=OFF
     -DCLANG_INCLUDE_TESTS:BOOL=OFF
     -DLLVM_CONFIG:PATH=${CMAKE_CURRENT_BINARY_DIR}/llvm/bin/llvm-config
+  ${verbose_command}
+  LOG_BUILD 0
   INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR}/llvm
   )
 
 
+if(CMAKE_COMPILER_IS_GNUCXX AND CMAKE_SYSTEM_NAME MATCHES "Linux")
+  set(extra_flags "-static-libstdc++")
+endif()
 set(CastXML_GIT_TAG master CACHE STRING "CastXML Git revision.")
 ExternalProject_Add(castxml
   GIT_REPOSITORY https://github.com/CastXML/CastXML.git
@@ -71,11 +84,13 @@ ExternalProject_Add(castxml
   CMAKE_GENERATOR "${CMAKE_GENERATOR}"
   CMAKE_CACHE_ARGS
     -DCMAKE_CXX_COMPILER:FILEPATH=${CMAKE_CXX_COMPILER}
-    "-DCMAKE_CXX_FLAGS:STRING=${CMAKE_CXX_FLAGS} -w"
+    "-DCMAKE_CXX_FLAGS:STRING=${CMAKE_CXX_FLAGS} -w ${extra_flags}"
     -DCMAKE_C_COMPILER:FILEPATH=${CMAKE_C_COMPILER}
     "-DCMAKE_C_FLAGS:STRING=${CMAKE_C_FLAGS} -w"
     -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
     -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
     -DLLVM_DIR:PATH=${CMAKE_CURRENT_BINARY_DIR}/llvm/share/llvm/cmake
-  INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR}/llvm
+  ${verbose_command}
+  LOG_BUILD 0
+  INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR}/castxml
   )
