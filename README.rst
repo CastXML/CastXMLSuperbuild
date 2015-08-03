@@ -19,7 +19,7 @@ The resulting `castxml` executable will be located at
 `CastXMLSuperbuild-build/castxml/bin/castxml`.
 
 Binary builds for Linux are available in the
-`CircleCI artifacts https://circleci.com/gh/thewtex/CastXMLSuperbuild`_.
+`CircleCI artifacts <https://circleci.com/gh/thewtex/CastXMLSuperbuild>`_.
 
 .. _CastXML: https://github.com/CastXML/CastXML
 .. _ExternalProject: http://www.cmake.org/cmake/help/git-master/module/ExternalProject.html
