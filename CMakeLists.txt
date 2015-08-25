@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 
-project(CastXMLSuperbuild)
-
-
+project(CastXMLSuperbuild NONE)
 # Set a default build type if none was specified
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   message(STATUS "Setting build type to 'Release' as none was specified.")
@@ -10,6 +8,9 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   # Set the possible values of build type for cmake-gui
   set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
 endif()
+enable_language(C)
+enable_language(CXX)
+
 
 # Use a static runtime with MSVC
 if(MSVC)
@@ -24,6 +25,7 @@ if(MSVC)
     endif()
   endforeach()
 endif()
+
 
 include(ExternalProject)
 
@@ -51,6 +53,7 @@ ExternalProject_Add(llvm
     "-DCMAKE_C_FLAGS:STRING=${CMAKE_C_FLAGS} -w"
     "-DCMAKE_C_FLAGS_RELEASE:STRING=${CMAKE_C_FLAGS_RELEASE}"
     -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
+    -DLLVM_USE_CRT_RELEASE:STRING=MT
     -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
     -DLLVM_INCLUDE_TESTS:BOOL=OFF
     -DLLVM_INCLUDE_EXAMPLES:BOOL=OFF
