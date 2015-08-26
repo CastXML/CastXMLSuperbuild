@@ -16,5 +16,8 @@ cd /usr/src/CastXMLSuperbuild-build || die "Could not cd into the build director
 cmake \
   /usr/src/CastXMLSuperbuild || die "CMake configuration failed"
 make VERBOSE=1 || die "Build failed"
+cd castxml-prefix/src/castxml-build
+ctest || die "CTest failed"
 
+cd /usr/src/CastXMLSuperbuild-build
 tar cvf castxml-linux.tar castxml
