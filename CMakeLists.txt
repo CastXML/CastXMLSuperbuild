@@ -27,6 +27,14 @@ if(MSVC)
 endif()
 
 
+if(APPLE)
+  set(osx_args
+    -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.9
+    -DCMAKE_OSX_ARCHITECTURES:STRING=x86_64
+    )
+endif()
+
+
 include(ExternalProject)
 
 find_program(NINJA_EXECUTABLE ninja)
@@ -58,6 +66,7 @@ ExternalProject_Add(llvm
     -DLLVM_INCLUDE_TESTS:BOOL=OFF
     -DLLVM_INCLUDE_EXAMPLES:BOOL=OFF
     -DLLVM_INCLUDE_DOCS:BOOL=OFF
+    ${osx_args}
   ${verbose_command}
   LOG_BUILD 0
   INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR}/llvm
@@ -86,6 +95,7 @@ ExternalProject_Add(clang
     -DCLANG_INCLUDE_DOCS:BOOL=OFF
     -DCLANG_INCLUDE_TESTS:BOOL=OFF
     -DLLVM_CONFIG:PATH=${CMAKE_CURRENT_BINARY_DIR}/llvm/bin/llvm-config
+    ${osx_args}
   ${verbose_command}
   LOG_BUILD 0
   INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR}/llvm
@@ -113,6 +123,7 @@ ExternalProject_Add(castxml
     -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
     -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
     -DLLVM_DIR:PATH=${CMAKE_CURRENT_BINARY_DIR}/llvm/share/llvm/cmake
+    ${osx_args}
   ${verbose_command}
   LOG_BUILD 0
   INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR}/castxml
