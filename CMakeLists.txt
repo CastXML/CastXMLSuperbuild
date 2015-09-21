@@ -44,13 +44,13 @@ if(NINJA_EXECUTABLE)
   set(verbose_command BUILD_COMMAND ${NINJA_EXECUTABLE} -v)
 endif()
 
-set(llvm_version 3.7.0rc1)
+set(llvm_version 3.7.0)
 ExternalProject_Add(llvm
   # This is the upstream source code repackaged in a .tar.gz for
   # compatibility with older CMake. Also the tests/ directory
   # removed to save space.
-  URL http://midas3.kitware.com/midas/download/bitstream/456383/llvm-${llvm_version}.src.tar.gz
-  URL_MD5 e0c06777f07b85db4ffce4c4e8b2939d
+  URL http://midas3.kitware.com/midas/download/bitstream/457222/llvm-${llvm_version}.src.tar.gz
+  URL_MD5 255939e1ba0a40d687a683e41323baca
   CMAKE_ARGS -Wno-dev
   CMAKE_GENERATOR "${CMAKE_GENERATOR}"
   CMAKE_CACHE_ARGS
@@ -77,8 +77,8 @@ ExternalProject_Add(clang
   # This is the upstream source code repackaged in a .tar.gz for
   # compatibility with older CMake. Also the tests/ directory
   # removed to save space.
-  URL http://midas3.kitware.com/midas/download/bitstream/456384/cfe-${llvm_version}.src.tar.gz
-  URL_MD5 73afc5b99b24f6d1451765dbdc7f44d5
+  URL http://midas3.kitware.com/midas/download/bitstream/457221/cfe-${llvm_version}.src.tar.gz
+  URL_MD5 d4290cab76f44be2d38631f819b8c2ec
   DEPENDS llvm
   SOURCE_DIR ${CMAKE_CURRENT_BINARY_DIR}/cfe-${llvm_version}
   CMAKE_ARGS -Wno-dev
