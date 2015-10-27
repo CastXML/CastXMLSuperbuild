@@ -18,8 +18,7 @@ This can be built like any other CMake_ project.  For example::
 The resulting `castxml` executable will be located at
 `CastXMLSuperbuild-build/castxml/bin/castxml`.
 
-Binary builds for Linux are available in the
-`CircleCI artifacts <https://circleci.com/gh/thewtex/CastXMLSuperbuild>`_.
+The resulting binary builds for Linux, Mac OSX, and Windows `are available here <http://midas3.kitware.com/midas/folder/13152>`_.
 
 .. _CastXML: https://github.com/CastXML/CastXML
 .. _ExternalProject: http://www.cmake.org/cmake/help/git-master/module/ExternalProject.html
