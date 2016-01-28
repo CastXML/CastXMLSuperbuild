@@ -106,8 +106,8 @@ ExternalProject_Add(clang
 if(CMAKE_COMPILER_IS_GNUCXX AND CMAKE_SYSTEM_NAME MATCHES "Linux")
   set(extra_flags "-static-libstdc++")
 endif()
-# 2016-01-12
-set(CastXML_GIT_TAG f57109f31b94d0410e091a549a4aa0febc4140d6 CACHE STRING "CastXML Git revision.")
+# 2016-01-28
+set(CastXML_GIT_TAG fc71eb983ff8e5665d7fc24818993d43b7137b39 CACHE STRING "CastXML Git revision.")
 ExternalProject_Add(castxml
   GIT_REPOSITORY https://github.com/CastXML/CastXML.git
   GIT_TAG ${CastXML_GIT_TAG}
