@@ -107,7 +107,7 @@ if(CMAKE_COMPILER_IS_GNUCXX AND CMAKE_SYSTEM_NAME MATCHES "Linux")
   set(extra_flags "-static-libstdc++")
 endif()
 # 2016-01-28
-set(CastXML_GIT_TAG c7de52912ca365accc004b01ba95a2bfebe14b0e CACHE STRING "CastXML Git revision.")
+set(CastXML_GIT_TAG f1bb3c2ac4ff530b38ce0cc627f04d47b21d76f2 CACHE STRING "CastXML Git revision.")
 ExternalProject_Add(castxml
   GIT_REPOSITORY https://github.com/CastXML/CastXML.git
   GIT_TAG ${CastXML_GIT_TAG}
