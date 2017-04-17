@@ -41,7 +41,7 @@ find_program(NINJA_EXECUTABLE ninja)
 if(NINJA_EXECUTABLE)
   set(CMAKE_GENERATOR "Ninja")
   # Make Ninja verbose so CircleCI does not think the build has halted.
-  set(verbose_command BUILD_COMMAND ${NINJA_EXECUTABLE} -v)
+  set(verbose_command BUILD_COMMAND ${NINJA_EXECUTABLE} ${BUILD_FLAGS} -v)
 endif()
 
 set(llvm_version 3.8.0)
