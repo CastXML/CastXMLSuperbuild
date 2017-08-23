@@ -1,7 +1,7 @@
 CastXML Superbuild
 ==================
 
-.. image:: https://circleci.com/gh/CastXML/CastXMLSuperbuild.svg?style=svg
+.. image:: https://circleci.com/gh/CastXML/CastXMLSuperbuild.svg?style=shield
     :target: https://circleci.com/gh/CastXML/CastXMLSuperbuild
 
 This builds CastXML_ and its dependencies (LLVM/Clang) with CMake's
