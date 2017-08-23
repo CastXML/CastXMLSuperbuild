@@ -4,6 +4,7 @@ jobs:
     docker:
       - image: thewtex/centos-build:latest
     working_directory: /usr/src/CastXMLSuperbuild
+    resource_class: xlarge
     steps:
       - checkout
 
