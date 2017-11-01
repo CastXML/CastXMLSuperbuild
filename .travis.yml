@@ -1,0 +1,18 @@
+sudo: true
+language: cpp
+os:
+- osx
+compiler:
+- clang
+cache:
+  directories:
+  - "$HOME/Library/Caches/Homebrew"
+
+script:
+- brew update && brew install llvm@3.9
+- mkdir -p ../CastXMLSuperbuild-build && cd ../CastXMLSuperbuild-build
+- brew list llvm@3.9 | grep LLVMConfig.cmake
+- cmake -DUSE_SYSTEM_LLVM:BOOL=ON -DLLVM_DIR=/usr/local/Cellar/llvm@3.9/3.9.1_1/lib/cmake/llvm ../CastXMLSuperbuild && make -j4
+- cd castxml-prefix/src/castxml-build && ctest && cd ../../..
+- tar cvf castxml-osx.tar castxml && gzip -9 castxml-osx.tar
+- curl -F file="@castxml-osx.tar.gz" https://filebin.ca/upload.php
