@@ -44,65 +44,75 @@ if(NINJA_EXECUTABLE)
   set(verbose_command BUILD_COMMAND ${NINJA_EXECUTABLE} ${BUILD_FLAGS} -v)
 endif()
 
-set(llvm_version 3.8.0)
-set(llvm_md5 caf3e684f19f9a06f0c3507a00f11377)
-ExternalProject_Add(llvm
-  # This is the upstream source code repackaged in a .tar.gz for
-  # compatibility with older CMake. Also the tests/ directory
-  # removed to save space.
-  URL https://midas3.kitware.com/midas/api/rest?method=midas.bitstream.download&checksum=${llvm_md5}&name=llvm-${llvm_version}.src.tar.gz
-  URL_MD5 ${llvm_md5}
-  CMAKE_ARGS -Wno-dev
-  CMAKE_GENERATOR "${CMAKE_GENERATOR}"
-  CMAKE_CACHE_ARGS
-    -DCMAKE_CXX_COMPILER:FILEPATH=${CMAKE_CXX_COMPILER}
-    "-DCMAKE_CXX_FLAGS:STRING=${CMAKE_CXX_FLAGS} -w"
-    "-DCMAKE_CXX_FLAGS_RELEASE:STRING=${CMAKE_CXX_FLAGS_RELEASE}"
-    -DCMAKE_C_COMPILER:FILEPATH=${CMAKE_C_COMPILER}
-    "-DCMAKE_C_FLAGS:STRING=${CMAKE_C_FLAGS} -w"
-    "-DCMAKE_C_FLAGS_RELEASE:STRING=${CMAKE_C_FLAGS_RELEASE}"
-    -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
-    -DLLVM_USE_CRT_RELEASE:STRING=MT
-    -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
-    -DLLVM_ENABLE_TERMINFO:BOOL=OFF
-    -DLLVM_INCLUDE_TESTS:BOOL=OFF
-    -DLLVM_INCLUDE_EXAMPLES:BOOL=OFF
-    -DLLVM_INCLUDE_DOCS:BOOL=OFF
-    ${osx_args}
-  ${verbose_command}
-  LOG_BUILD 0
-  INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR}/llvm
-  )
+option(USE_SYSTEM_LLVM "Use the system LLVM instead of building it." OFF)
+if(USE_SYSTEM_LLVM)
+  find_package(LLVM REQUIRED NO_MODULE)
+  set(castxml_deps)
+else()
+
+  set(llvm_version 3.8.0)
+  set(llvm_md5 caf3e684f19f9a06f0c3507a00f11377)
+  ExternalProject_Add(llvm
+    # This is the upstream source code repackaged in a .tar.gz for
+    # compatibility with older CMake. Also the tests/ directory
+    # removed to save space.
+    URL https://midas3.kitware.com/midas/api/rest?method=midas.bitstream.download&checksum=${llvm_md5}&name=llvm-${llvm_version}.src.tar.gz
+    URL_MD5 ${llvm_md5}
+    CMAKE_ARGS -Wno-dev
+    CMAKE_GENERATOR "${CMAKE_GENERATOR}"
+    CMAKE_CACHE_ARGS
+      -DCMAKE_CXX_COMPILER:FILEPATH=${CMAKE_CXX_COMPILER}
+      "-DCMAKE_CXX_FLAGS:STRING=${CMAKE_CXX_FLAGS} -w"
+      "-DCMAKE_CXX_FLAGS_RELEASE:STRING=${CMAKE_CXX_FLAGS_RELEASE}"
+      -DCMAKE_C_COMPILER:FILEPATH=${CMAKE_C_COMPILER}
+      "-DCMAKE_C_FLAGS:STRING=${CMAKE_C_FLAGS} -w"
+      "-DCMAKE_C_FLAGS_RELEASE:STRING=${CMAKE_C_FLAGS_RELEASE}"
+      -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
+      -DLLVM_USE_CRT_RELEASE:STRING=MT
+      -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+      -DLLVM_ENABLE_TERMINFO:BOOL=OFF
+      -DLLVM_INCLUDE_TESTS:BOOL=OFF
+      -DLLVM_INCLUDE_EXAMPLES:BOOL=OFF
+      -DLLVM_INCLUDE_DOCS:BOOL=OFF
+      ${osx_args}
+    ${verbose_command}
+    LOG_BUILD 0
+    INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR}/llvm
+    )
 
 
-set(clang_md5 77313fdb06596f1d9b289bed99069af5)
-ExternalProject_Add(clang
-  # This is the upstream source code repackaged in a .tar.gz for
-  # compatibility with older CMake. Also the tests/ directory
-  # removed to save space.
-  URL https://midas3.kitware.com/midas/api/rest?method=midas.bitstream.download&checksum=${clang_md5}&name=cfe-${llvm_version}.src.tar.gz
-  URL_MD5 ${clang_md5}
-  DEPENDS llvm
-  SOURCE_DIR ${CMAKE_CURRENT_BINARY_DIR}/cfe-${llvm_version}
-  CMAKE_ARGS -Wno-dev
-  CMAKE_GENERATOR "${CMAKE_GENERATOR}"
-  CMAKE_CACHE_ARGS
-    -DCMAKE_CXX_COMPILER:FILEPATH=${CMAKE_CXX_COMPILER}
-    "-DCMAKE_CXX_FLAGS:STRING=${CMAKE_CXX_FLAGS} -w"
-    "-DCMAKE_CXX_FLAGS_RELEASE:STRING=${CMAKE_CXX_FLAGS_RELEASE}"
-    -DCMAKE_C_COMPILER:FILEPATH=${CMAKE_C_COMPILER}
-    "-DCMAKE_C_FLAGS:STRING=${CMAKE_C_FLAGS} -w"
-    "-DCMAKE_C_FLAGS_RELEASE:STRING=${CMAKE_C_FLAGS_RELEASE}"
-    -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
-    -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
-    -DCLANG_INCLUDE_DOCS:BOOL=OFF
-    -DCLANG_INCLUDE_TESTS:BOOL=OFF
-    -DLLVM_CONFIG:PATH=${CMAKE_CURRENT_BINARY_DIR}/llvm/bin/llvm-config
-    ${osx_args}
-  ${verbose_command}
-  LOG_BUILD 0
-  INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR}/llvm
-  )
+  set(clang_md5 77313fdb06596f1d9b289bed99069af5)
+  ExternalProject_Add(clang
+    # This is the upstream source code repackaged in a .tar.gz for
+    # compatibility with older CMake. Also the tests/ directory
+    # removed to save space.
+    URL https://midas3.kitware.com/midas/api/rest?method=midas.bitstream.download&checksum=${clang_md5}&name=cfe-${llvm_version}.src.tar.gz
+    URL_MD5 ${clang_md5}
+    DEPENDS llvm
+    SOURCE_DIR ${CMAKE_CURRENT_BINARY_DIR}/cfe-${llvm_version}
+    CMAKE_ARGS -Wno-dev
+    CMAKE_GENERATOR "${CMAKE_GENERATOR}"
+    CMAKE_CACHE_ARGS
+      -DCMAKE_CXX_COMPILER:FILEPATH=${CMAKE_CXX_COMPILER}
+      "-DCMAKE_CXX_FLAGS:STRING=${CMAKE_CXX_FLAGS} -w"
+      "-DCMAKE_CXX_FLAGS_RELEASE:STRING=${CMAKE_CXX_FLAGS_RELEASE}"
+      -DCMAKE_C_COMPILER:FILEPATH=${CMAKE_C_COMPILER}
+      "-DCMAKE_C_FLAGS:STRING=${CMAKE_C_FLAGS} -w"
+      "-DCMAKE_C_FLAGS_RELEASE:STRING=${CMAKE_C_FLAGS_RELEASE}"
+      -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
+      -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+      -DCLANG_INCLUDE_DOCS:BOOL=OFF
+      -DCLANG_INCLUDE_TESTS:BOOL=OFF
+      -DLLVM_CONFIG:PATH=${CMAKE_CURRENT_BINARY_DIR}/llvm/bin/llvm-config
+      ${osx_args}
+    ${verbose_command}
+    LOG_BUILD 0
+    INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR}/llvm
+    )
+
+  set(castxml_deps llvm clang)
+  set(LLVM_DIR ${CMAKE_CURRENT_BINARY_DIR}/llvm/share/llvm/cmake)
+endif()
 
 
 # Use a static C++ library on GCC/Linux
@@ -114,7 +124,7 @@ set(CastXML_GIT_TAG 367e90c1ecd92adb0071b4ec1ddf684213805afc CACHE STRING "CastX
 ExternalProject_Add(castxml
   GIT_REPOSITORY https://github.com/CastXML/CastXML.git
   GIT_TAG ${CastXML_GIT_TAG}
-  DEPENDS llvm clang
+  DEPENDS ${castxml_deps}
   CMAKE_ARGS -Wno-dev
   CMAKE_GENERATOR "${CMAKE_GENERATOR}"
   CMAKE_CACHE_ARGS
@@ -126,7 +136,7 @@ ExternalProject_Add(castxml
     "-DCMAKE_C_FLAGS_RELEASE:STRING=${CMAKE_C_FLAGS_RELEASE}"
     -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
     -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
-    -DLLVM_DIR:PATH=${CMAKE_CURRENT_BINARY_DIR}/llvm/share/llvm/cmake
+    -DLLVM_DIR:PATH=${LLVM_DIR}
     ${osx_args}
   ${verbose_command}
   LOG_BUILD 0
