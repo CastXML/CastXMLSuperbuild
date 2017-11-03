@@ -1,0 +1,46 @@
+os:
+  - Visual Studio 2015
+
+branches:
+ only:
+  - master
+
+version: "0.0.1.{build}"
+
+install:
+
+  - mkdir C:\Support
+  - cd C:\Support
+
+  - set NINJA_URL="https://github.com/ninja-build/ninja/releases/download/v1.8.2/ninja-win.zip"
+  - appveyor DownloadFile %NINJA_URL% -FileName ninja.zip
+  - 7z x ninja.zip -oC:\Support\ninja > nul
+  - set PATH=C:\Support\ninja;%PATH%
+  - ninja --version
+
+  - cd C:\projects
+
+
+before_build:
+
+  - call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" amd64
+
+build_script:
+
+  - mkdir build
+  - cd build
+  - cmake -G Ninja ../CastXMLSuperbuild
+  - cmake --build .
+  - cd castxml-prefix\src\castxml-build
+  - ctest
+  - cd ..\..\..
+  - 7z a castxml-windows.zip castxml
+  - move castxml-windows.zip C:\projects\CastXMLSuperbuild\
+
+test: off
+
+artifacts:
+
+  - path: 'castxml-windows.zip'
+
+deploy: off
