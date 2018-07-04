@@ -6,11 +6,17 @@ jobs:
     working_directory: /usr/src/CastXMLSuperbuild
     resource_class: xlarge
     steps:
-      - checkout
-
+      - checkout:
+          path: /usr/src/CastXMLSuperbuild
       - run:
           name: build
           command: ./centos-build.sh
       - store_artifacts:
           path: /usr/src/CastXMLSuperbuild-build/castxml-linux.tar.gz
           destination: castxml-linux.tar.gz
+
+workflows:
+    version: 2
+    build:
+      jobs:
+        - build
