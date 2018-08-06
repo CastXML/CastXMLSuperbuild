@@ -15,4 +15,4 @@ script:
 - cmake -DUSE_SYSTEM_LLVM:BOOL=ON -DLLVM_DIR=/usr/local/Cellar/llvm/6.0.1/lib/cmake/llvm ../CastXMLSuperbuild && make -j4
 - cd castxml-prefix/src/castxml-build && ctest && cd ../../..
 - tar cvf castxml-macosx.tar castxml && gzip -9 castxml-macosx.tar
-- curl -F file="@castxml-macosx.tar.gz" https://filebin.ca/upload.php
+- curl --upload-file ./castxml-macosx.tar.gz https://transfer.sh/castxml-macosx.tar.gz
