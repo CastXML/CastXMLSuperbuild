@@ -7,9 +7,6 @@ CastXML Superbuild
 .. image:: https://travis-ci.org/CastXML/CastXMLSuperbuild.svg?branch=master
     :target: https://travis-ci.org/CastXML/CastXMLSuperbuild
 
-.. image:: https://img.shields.io/appveyor/ci/thewtex/castxmlsuperbuild.svg
-    :target: https://ci.appveyor.com/project/thewtex/castxmlsuperbuild
-
 This builds CastXML_ and its dependencies (LLVM/Clang) with CMake's
 ExternalProject_ module. It is a cross-platform way to build CastXML.
 
