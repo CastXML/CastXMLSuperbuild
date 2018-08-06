@@ -2,15 +2,21 @@ version: 2
 jobs:
   build:
     docker:
-      - image: thewtex/centos-build:latest
+      - image: dockbuild/centos7:latest
     working_directory: /usr/src/CastXMLSuperbuild
     resource_class: xlarge
     steps:
-      - checkout
-
+      - checkout:
+          path: /usr/src/CastXMLSuperbuild
       - run:
           name: build
           command: ./centos-build.sh
       - store_artifacts:
           path: /usr/src/CastXMLSuperbuild-build/castxml-linux.tar.gz
           destination: castxml-linux.tar.gz
+
+workflows:
+    version: 2
+    build:
+      jobs:
+        - build

@@ -50,13 +50,13 @@ if(USE_SYSTEM_LLVM)
   set(castxml_deps)
 else()
 
-  set(llvm_version 5.0.0)
-  set(llvm_md5 e3782305ff4a60ad9bbc3a926425786f)
+  set(llvm_version 6.0.1)
+  set(llvm_md5 c88c98709300ce2c285391f387fecce0)
   ExternalProject_Add(llvm
     # This is the upstream source code repackaged in a .tar.gz for
     # compatibility with older CMake. Also the tests/ directory
     # removed to save space.
-    URL https://midas3.kitware.com/midas/api/rest?method=midas.bitstream.download&checksum=${llvm_md5}&name=llvm-${llvm_version}.src.tar.gz
+    URL https://releases.llvm.org/${llvm_version}/llvm-${llvm_version}.src.tar.xz
     URL_MD5 ${llvm_md5}
     CMAKE_ARGS -Wno-dev
     CMAKE_GENERATOR "${CMAKE_GENERATOR}"
@@ -81,12 +81,12 @@ else()
     )
 
 
-  set(clang_md5 79eddb9b1f6e6ee8e9eeff1245d3f359)
+  set(clang_md5 4e419bd4e3b55aa06d872320f754bd85)
   ExternalProject_Add(clang
     # This is the upstream source code repackaged in a .tar.gz for
     # compatibility with older CMake. Also the tests/ directory
     # removed to save space.
-    URL https://midas3.kitware.com/midas/api/rest?method=midas.bitstream.download&checksum=${clang_md5}&name=cfe-${llvm_version}.src.tar.gz
+    URL https://releases.llvm.org/${llvm_version}/cfe-${llvm_version}.src.tar.xz
     URL_MD5 ${clang_md5}
     DEPENDS llvm
     SOURCE_DIR ${CMAKE_CURRENT_BINARY_DIR}/cfe-${llvm_version}
@@ -119,8 +119,8 @@ endif()
 if(CMAKE_COMPILER_IS_GNUCXX AND CMAKE_SYSTEM_NAME MATCHES "Linux")
   set(extra_flags "-static-libstdc++")
 endif()
-# 2017-11-06
-set(CastXML_GIT_TAG 3a81f3cc3060be86064ba2e666d30b0c358cc847 CACHE STRING "CastXML Git revision.")
+# 2018-07-04
+set(CastXML_GIT_TAG c2a44d06d9379718292b696f4e13a2725ff9d95e CACHE STRING "CastXML Git revision.")
 ExternalProject_Add(castxml
   GIT_REPOSITORY https://github.com/CastXML/CastXML.git
   GIT_TAG ${CastXML_GIT_TAG}
