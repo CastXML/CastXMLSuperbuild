@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: dockbuild/centos7:latest
+      - image: dockcross/manylinux-x64:latest
     working_directory: /usr/src/CastXMLSuperbuild
     resource_class: xlarge
     steps:
@@ -10,7 +10,9 @@ jobs:
           path: /usr/src/CastXMLSuperbuild
       - run:
           name: build
-          command: ./centos-build.sh
+          command: |
+            export PATH=/opt/python/cp36-cp36m/bin:${PATH}
+            ./centos-build.sh
       - store_artifacts:
           path: /usr/src/CastXMLSuperbuild-build/castxml-linux.tar.gz
           destination: castxml-linux.tar.gz
