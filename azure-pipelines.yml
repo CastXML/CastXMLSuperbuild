@@ -1,0 +1,35 @@
+trigger:
+- master
+
+jobs:
+  - job: Linux
+    timeoutInMinutes: 0
+    cancelTimeoutInMinutes: 300
+    pool:
+      vmImage: 'ubuntu-latest'
+
+    steps:
+    - script: |
+        docker run --rm dockbuild/centos7:latest > ./dockbuild
+        chmod +x ./dockbuild
+
+        mkdir build
+        ./dockbuild cmake -Bbuild -S. -GNinja
+        ./dockbuild ninja -Cbuild
+      displayName: 'Build'
+
+    - script: |
+        ./dockbuild bash -c 'cd build/castxml-prefix/src/castxml-build && ctest'
+      displayName: 'Test'
+
+    - script: |
+        cd build
+        tar cvf castxml-linux.tar castxml
+        gzip -9 castxml-linux.tar
+        mv castxml-linux.tar.gz ..
+      displayName: 'Archive'
+
+    - task: PublishPipelineArtifact@0
+      inputs:
+        artifactName: 'LinuxArchive'
+        targetPath: './castxml-linux.tar.gz'
