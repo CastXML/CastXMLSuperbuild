@@ -33,3 +33,35 @@ jobs:
       inputs:
         artifactName: 'LinuxArchive'
         targetPath: './castxml-linux.tar.gz'
+
+  - job: macOS
+    timeoutInMinutes: 0
+    cancelTimeoutInMinutes: 300
+    pool:
+      vmImage: 'macOS 10.13'
+
+    steps:
+    - script: |
+        mkdir build
+        cd build
+        brew install ninja
+        cmake -GNinja ../
+        ninja
+      displayName: 'Build'
+
+    - script: |
+        cd build/castxml-prefix/src/castxml-build
+        ctest
+      displayName: 'Test'
+
+    - script: |
+        cd build
+        tar cvf castxml-macosx.tar castxml
+        gzip -9 castxml-macosx.tar
+        mv castxml-macosx.tar.gz ..
+      displayName: 'Archive'
+
+    - task: PublishPipelineArtifact@0
+      inputs:
+        artifactName: 'MacOSArchive'
+        targetPath: './castxml-macosx.tar.gz'
