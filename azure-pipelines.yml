@@ -65,3 +65,38 @@ jobs:
       inputs:
         artifactName: 'MacOSArchive'
         targetPath: './castxml-macosx.tar.gz'
+
+  - job: Windows
+    timeoutInMinutes: 0
+    cancelTimeoutInMinutes: 300
+    pool:
+      vmImage: 'vs2017-win2016'
+
+    steps:
+    - script: |
+        call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+        pip3 install ninja
+        set CC=cl.exe
+        set CXX=cl.exe
+
+        mkdir build
+        cd build
+        cmake -GNinja ../
+        ninja
+      displayName: 'Build'
+
+    - script: |
+        cd build/castxml-prefix/src/castxml-build
+        ctest
+      displayName: 'Test'
+
+    - script: |
+        cd build
+        7z a castxml-windows.zip castxml
+        mv castxml-windows.zip ..
+      displayName: 'Archive'
+
+    - task: PublishPipelineArtifact@0
+      inputs:
+        artifactName: 'WindowsArchive'
+        targetPath: './castxml-windows.zip'
