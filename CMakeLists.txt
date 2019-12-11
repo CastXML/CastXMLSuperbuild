@@ -50,8 +50,8 @@ if(USE_SYSTEM_LLVM)
   set(castxml_deps)
 else()
 
-  set(llvm_version 6.0.1)
-  set(llvm_md5 c88c98709300ce2c285391f387fecce0)
+  set(llvm_version 9.0.0)
+  set(llvm_md5 0fd4283ff485dffb71a4f1cc8fd3fc72)
   ExternalProject_Add(llvm
     # This is the upstream source code repackaged in a .tar.gz for
     # compatibility with older CMake. Also the tests/ directory
@@ -81,7 +81,7 @@ else()
     )
 
 
-  set(clang_md5 4e419bd4e3b55aa06d872320f754bd85)
+  set(clang_md5 0df6971e2f99b1e99e7bfb533e4067af)
   ExternalProject_Add(clang
     # This is the upstream source code repackaged in a .tar.gz for
     # compatibility with older CMake. Also the tests/ directory
