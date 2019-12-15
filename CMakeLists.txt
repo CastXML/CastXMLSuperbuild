@@ -74,6 +74,7 @@ else()
       -DLLVM_INCLUDE_TESTS:BOOL=OFF
       -DLLVM_INCLUDE_EXAMPLES:BOOL=OFF
       -DLLVM_INCLUDE_DOCS:BOOL=OFF
+      -DLLVM_TEMPORARILY_ALLOW_OLD_TOOLCHAIN:BOOL=ON
       ${osx_args}
     ${verbose_command}
     LOG_BUILD 0
@@ -104,6 +105,7 @@ else()
       -DCLANG_INCLUDE_DOCS:BOOL=OFF
       -DCLANG_INCLUDE_TESTS:BOOL=OFF
       -DLLVM_CONFIG:PATH=${CMAKE_CURRENT_BINARY_DIR}/llvm/bin/llvm-config
+      -DLLVM_TEMPORARILY_ALLOW_OLD_TOOLCHAIN:BOOL=ON
       ${osx_args}
     ${verbose_command}
     LOG_BUILD 0
