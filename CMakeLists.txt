@@ -50,13 +50,10 @@ if(USE_SYSTEM_LLVM)
   set(castxml_deps)
 else()
 
-  set(llvm_version 9.0.0)
-  set(llvm_md5 0fd4283ff485dffb71a4f1cc8fd3fc72)
+  set(llvm_version 9.0.1)
+  set(llvm_md5 31eb9ce73dd2a0f8dcab8319fb03f8fc)
   ExternalProject_Add(llvm
-    # This is the upstream source code repackaged in a .tar.gz for
-    # compatibility with older CMake. Also the tests/ directory
-    # removed to save space.
-    URL https://releases.llvm.org/${llvm_version}/llvm-${llvm_version}.src.tar.xz
+    URL https://github.com/llvm/llvm-project/releases/download/llvmorg-${llvm_version}/llvm-${llvm_version}.src.tar.xz
     URL_MD5 ${llvm_md5}
     CMAKE_ARGS -Wno-dev
     CMAKE_GENERATOR "${CMAKE_GENERATOR}"
@@ -82,12 +79,9 @@ else()
     )
 
 
-  set(clang_md5 0df6971e2f99b1e99e7bfb533e4067af)
+  set(clang_md5 13468e4a44940efef1b75e8641752f90)
   ExternalProject_Add(clang
-    # This is the upstream source code repackaged in a .tar.gz for
-    # compatibility with older CMake. Also the tests/ directory
-    # removed to save space.
-    URL https://releases.llvm.org/${llvm_version}/cfe-${llvm_version}.src.tar.xz
+    URL https://github.com/llvm/llvm-project/releases/download/llvmorg-${llvm_version}/clang-${llvm_version}.src.tar.xz
     URL_MD5 ${clang_md5}
     DEPENDS llvm
     SOURCE_DIR ${CMAKE_CURRENT_BINARY_DIR}/cfe-${llvm_version}
