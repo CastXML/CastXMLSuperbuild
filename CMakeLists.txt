@@ -50,13 +50,10 @@ if(USE_SYSTEM_LLVM)
   set(castxml_deps)
 else()
 
-  set(llvm_version 6.0.1)
-  set(llvm_md5 c88c98709300ce2c285391f387fecce0)
+  set(llvm_version 9.0.1)
+  set(llvm_md5 31eb9ce73dd2a0f8dcab8319fb03f8fc)
   ExternalProject_Add(llvm
-    # This is the upstream source code repackaged in a .tar.gz for
-    # compatibility with older CMake. Also the tests/ directory
-    # removed to save space.
-    URL https://releases.llvm.org/${llvm_version}/llvm-${llvm_version}.src.tar.xz
+    URL https://github.com/llvm/llvm-project/releases/download/llvmorg-${llvm_version}/llvm-${llvm_version}.src.tar.xz
     URL_MD5 ${llvm_md5}
     CMAKE_ARGS -Wno-dev
     CMAKE_GENERATOR "${CMAKE_GENERATOR}"
@@ -74,6 +71,7 @@ else()
       -DLLVM_INCLUDE_TESTS:BOOL=OFF
       -DLLVM_INCLUDE_EXAMPLES:BOOL=OFF
       -DLLVM_INCLUDE_DOCS:BOOL=OFF
+      -DLLVM_TEMPORARILY_ALLOW_OLD_TOOLCHAIN:BOOL=ON
       ${osx_args}
     ${verbose_command}
     LOG_BUILD 0
@@ -81,12 +79,9 @@ else()
     )
 
 
-  set(clang_md5 4e419bd4e3b55aa06d872320f754bd85)
+  set(clang_md5 13468e4a44940efef1b75e8641752f90)
   ExternalProject_Add(clang
-    # This is the upstream source code repackaged in a .tar.gz for
-    # compatibility with older CMake. Also the tests/ directory
-    # removed to save space.
-    URL https://releases.llvm.org/${llvm_version}/cfe-${llvm_version}.src.tar.xz
+    URL https://github.com/llvm/llvm-project/releases/download/llvmorg-${llvm_version}/clang-${llvm_version}.src.tar.xz
     URL_MD5 ${clang_md5}
     DEPENDS llvm
     SOURCE_DIR ${CMAKE_CURRENT_BINARY_DIR}/cfe-${llvm_version}
@@ -104,6 +99,7 @@ else()
       -DCLANG_INCLUDE_DOCS:BOOL=OFF
       -DCLANG_INCLUDE_TESTS:BOOL=OFF
       -DLLVM_CONFIG:PATH=${CMAKE_CURRENT_BINARY_DIR}/llvm/bin/llvm-config
+      -DLLVM_TEMPORARILY_ALLOW_OLD_TOOLCHAIN:BOOL=ON
       ${osx_args}
     ${verbose_command}
     LOG_BUILD 0
@@ -119,8 +115,8 @@ endif()
 if(CMAKE_COMPILER_IS_GNUCXX AND CMAKE_SYSTEM_NAME MATCHES "Linux")
   set(extra_flags "-static-libstdc++")
 endif()
-# 2019-07-15 master
-set(CastXML_GIT_TAG 75bd5c41785e9ea2bcd5e2ffda575d660a1c9dae CACHE STRING "CastXML Git revision.")
+# 2019-11-11 master
+set(CastXML_GIT_TAG 64e02a04b16cab23b2ac9efd206024f3f79a185e CACHE STRING "CastXML Git revision.")
 ExternalProject_Add(castxml
   GIT_REPOSITORY https://github.com/CastXML/CastXML.git
   GIT_TAG ${CastXML_GIT_TAG}
