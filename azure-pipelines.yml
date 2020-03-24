@@ -10,7 +10,7 @@ jobs:
 
     steps:
     - script: |
-        docker run --rm dockbuild/centos5:latest > ./dockbuild
+        docker run --rm dockbuild/centos7:latest > ./dockbuild
         chmod +x ./dockbuild
 
         mkdir build
