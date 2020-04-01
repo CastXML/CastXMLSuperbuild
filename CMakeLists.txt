@@ -24,6 +24,8 @@ if(MSVC)
       string(REGEX REPLACE "/MD" "/MT" ${flag} "${${flag}}")
     endif()
   endforeach()
+else()
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 endif()
 
 
