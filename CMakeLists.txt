@@ -24,6 +24,8 @@ if(MSVC)
       string(REGEX REPLACE "/MD" "/MT" ${flag} "${${flag}}")
     endif()
   endforeach()
+else()
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 endif()
 
 
@@ -50,8 +52,8 @@ if(USE_SYSTEM_LLVM)
   set(castxml_deps)
 else()
 
-  set(llvm_version 9.0.1)
-  set(llvm_md5 31eb9ce73dd2a0f8dcab8319fb03f8fc)
+  set(llvm_version 10.0.0)
+  set(llvm_md5 693cefdc49d618f828144486a18b473f)
   ExternalProject_Add(llvm
     URL https://github.com/llvm/llvm-project/releases/download/llvmorg-${llvm_version}/llvm-${llvm_version}.src.tar.xz
     URL_MD5 ${llvm_md5}
@@ -79,7 +81,7 @@ else()
     )
 
 
-  set(clang_md5 13468e4a44940efef1b75e8641752f90)
+  set(clang_md5 717ef92318fed4dbe1ee058368cfb552)
   ExternalProject_Add(clang
     URL https://github.com/llvm/llvm-project/releases/download/llvmorg-${llvm_version}/clang-${llvm_version}.src.tar.xz
     URL_MD5 ${clang_md5}
@@ -115,8 +117,8 @@ endif()
 if(CMAKE_COMPILER_IS_GNUCXX AND CMAKE_SYSTEM_NAME MATCHES "Linux")
   set(extra_flags "-static-libstdc++")
 endif()
-# 2019-11-11 master
-set(CastXML_GIT_TAG 64e02a04b16cab23b2ac9efd206024f3f79a185e CACHE STRING "CastXML Git revision.")
+# 2020-03-31 master
+set(CastXML_GIT_TAG ab2bbe078894357ecfc166f11789b08fe5997b0a CACHE STRING "CastXML Git revision.")
 ExternalProject_Add(castxml
   GIT_REPOSITORY https://github.com/CastXML/CastXML.git
   GIT_TAG ${CastXML_GIT_TAG}
