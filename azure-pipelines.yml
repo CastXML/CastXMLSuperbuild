@@ -19,7 +19,7 @@ jobs:
       displayName: 'Build'
 
     - script: |
-        ./dockbuild bash -c 'cd build/castxml-prefix/src/castxml-build && ctest'
+        ./dockbuild bash -c 'cd build/castxml-prefix/src/castxml-build && ctest --output-on-failure'
       displayName: 'Test'
 
     - script: |
@@ -51,7 +51,7 @@ jobs:
 
     - script: |
         cd build/castxml-prefix/src/castxml-build
-        ctest
+        ctest --output-on-failure
       displayName: 'Test'
 
     - script: |
@@ -87,7 +87,7 @@ jobs:
 
     - script: |
         cd build/castxml-prefix/src/castxml-build
-        ctest
+        ctest --output-on-failure
       displayName: 'Test'
 
     - script: |
