@@ -52,10 +52,11 @@ if(USE_SYSTEM_LLVM)
   set(castxml_deps)
 else()
 
-  set(llvm_version 10.0.0)
-  set(llvm_md5 693cefdc49d618f828144486a18b473f)
+  set(llvm_version 11.0.0rc3)
+  set(llvm_folder 11.0.0-rc3)
+  set(llvm_md5 298943e26930ad58253d40edae0df771)
   ExternalProject_Add(llvm
-    URL https://github.com/llvm/llvm-project/releases/download/llvmorg-${llvm_version}/llvm-${llvm_version}.src.tar.xz
+    URL https://github.com/llvm/llvm-project/releases/download/llvmorg-${llvm_folder}/llvm-${llvm_version}.src.tar.xz
     URL_MD5 ${llvm_md5}
     CMAKE_ARGS -Wno-dev
     CMAKE_GENERATOR "${CMAKE_GENERATOR}"
@@ -81,9 +82,9 @@ else()
     )
 
 
-  set(clang_md5 717ef92318fed4dbe1ee058368cfb552)
+  set(clang_md5 242b25bbd11f19752198e4bad70cc20c)
   ExternalProject_Add(clang
-    URL https://github.com/llvm/llvm-project/releases/download/llvmorg-${llvm_version}/clang-${llvm_version}.src.tar.xz
+    URL https://github.com/llvm/llvm-project/releases/download/llvmorg-${llvm_folder}/clang-${llvm_version}.src.tar.xz
     URL_MD5 ${clang_md5}
     DEPENDS llvm
     SOURCE_DIR ${CMAKE_CURRENT_BINARY_DIR}/cfe-${llvm_version}
@@ -117,8 +118,8 @@ endif()
 if(CMAKE_COMPILER_IS_GNUCXX AND CMAKE_SYSTEM_NAME MATCHES "Linux")
   set(extra_flags "-static-libstdc++")
 endif()
-# 2020-04-27 master
-set(CastXML_GIT_TAG v0.3.4 CACHE STRING "CastXML Git revision.")
+# 2020-09-22 master
+set(CastXML_GIT_TAG v0.3.6 CACHE STRING "CastXML Git revision.")
 ExternalProject_Add(castxml
   GIT_REPOSITORY https://github.com/CastXML/CastXML.git
   GIT_TAG ${CastXML_GIT_TAG}
