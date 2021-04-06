@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.10)
 
 project(CastXMLSuperbuild NONE)
 # Set a default build type if none was specified
