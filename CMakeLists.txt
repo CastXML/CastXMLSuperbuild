@@ -32,7 +32,6 @@ endif()
 if(APPLE)
   set(osx_args
     -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.9
-    -DCMAKE_OSX_ARCHITECTURES:STRING=x86_64
     )
 endif()
 
