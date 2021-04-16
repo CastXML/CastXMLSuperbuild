@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.10)
 
 project(CastXMLSuperbuild NONE)
 # Set a default build type if none was specified
@@ -32,7 +32,6 @@ endif()
 if(APPLE)
   set(osx_args
     -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.9
-    -DCMAKE_OSX_ARCHITECTURES:STRING=x86_64
     )
 endif()
 
@@ -52,9 +51,9 @@ if(USE_SYSTEM_LLVM)
   set(castxml_deps)
 else()
 
-  set(llvm_version 11.0.0rc3)
-  set(llvm_folder 11.0.0-rc3)
-  set(llvm_md5 298943e26930ad58253d40edae0df771)
+  set(llvm_version 11.1.0)
+  set(llvm_folder 11.1.0)
+  set(llvm_md5 69bc06661ce8f1872e27b40ff96002b2)
   ExternalProject_Add(llvm
     URL https://github.com/llvm/llvm-project/releases/download/llvmorg-${llvm_folder}/llvm-${llvm_version}.src.tar.xz
     URL_MD5 ${llvm_md5}
@@ -82,7 +81,7 @@ else()
     )
 
 
-  set(clang_md5 242b25bbd11f19752198e4bad70cc20c)
+  set(clang_md5 133c6719e22bfded74fcaf1d3092e979)
   ExternalProject_Add(clang
     URL https://github.com/llvm/llvm-project/releases/download/llvmorg-${llvm_folder}/clang-${llvm_version}.src.tar.xz
     URL_MD5 ${clang_md5}
@@ -119,7 +118,7 @@ if(CMAKE_COMPILER_IS_GNUCXX AND CMAKE_SYSTEM_NAME MATCHES "Linux")
   set(extra_flags "-static-libstdc++")
 endif()
 # 2020-09-22 master
-set(CastXML_GIT_TAG v0.4.2 CACHE STRING "CastXML Git revision.")
+set(CastXML_GIT_TAG v0.4.3 CACHE STRING "CastXML Git revision.")
 ExternalProject_Add(castxml
   GIT_REPOSITORY https://github.com/CastXML/CastXML.git
   GIT_TAG ${CastXML_GIT_TAG}
