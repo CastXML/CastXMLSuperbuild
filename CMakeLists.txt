@@ -51,9 +51,23 @@ if(USE_SYSTEM_LLVM)
   set(castxml_deps)
 else()
 
+
   set(llvm_version 11.1.0)
   set(llvm_folder 11.1.0)
   set(llvm_md5 69bc06661ce8f1872e27b40ff96002b2)
+
+  option(LLVM_OPENMP_SUPPORT "Add the flag to enable OpenMP support for LLVM?" OFF)
+  if(LLVM_OPENMP_SUPPORT)
+    set(openmp_version ${llvm_version})
+    set(openmp_folder ${llvm_folder})
+    set(openmp_args
+	    -DLLVM_EXTERNAL_OPENMP_SOURCE_DIR:PATH=${CMAKE_CURRENT_BINARY_DIR}/openmp-${openmp_version}.src
+	    -DLLVM_EXTERNAL_CLANG_SOURCE_DIR:PATH=${CMAKE_CURRENT_BINARY_DIR}/clang-${llvm_version}.src
+	    -DLLVM_TOOL_OPENMP_BUILD:BOOL=ON)
+    set(omp_src "openmp.tar.xz")
+    file(DOWNLOAD https://github.com/llvm/llvm-project/releases/download/llvmorg-${openmp_folder}/openmp-${openmp_version}.src.tar.xz ${CMAKE_CURRENT_BINARY_DIR}/${omp_src} LOG omp_result)
+  endif()
+
   ExternalProject_Add(llvm
     URL https://github.com/llvm/llvm-project/releases/download/llvmorg-${llvm_folder}/llvm-${llvm_version}.src.tar.xz
     URL_MD5 ${llvm_md5}
@@ -74,19 +88,30 @@ else()
       -DLLVM_INCLUDE_EXAMPLES:BOOL=OFF
       -DLLVM_INCLUDE_DOCS:BOOL=OFF
       -DLLVM_TEMPORARILY_ALLOW_OLD_TOOLCHAIN:BOOL=ON
+      ${openmp_args}
       ${osx_args}
     ${verbose_command}
     LOG_BUILD 0
     INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR}/llvm
     )
 
+  if(LLVM_OPENMP_SUPPORT)
+    ExternalProject_Add_Step(llvm openmp
+      COMMAND ${CMAKE_COMMAND} -E tar xzf ${CMAKE_CURRENT_BINARY_DIR}/${omp_src}
+      DEPENDERS configure
+      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+      )
+  endif()
+
+  # Execution of download and unzip of clang moved here to
+  # allow OpenMP to properly find Clang source code during LLVM compilation
+  file(DOWNLOAD https://github.com/llvm/llvm-project/releases/download/llvmorg-${llvm_folder}/clang-${llvm_version}.src.tar.xz ${CMAKE_CURRENT_BINARY_DIR}/cfe-${llvm_version}.tar.xz STATUS clang_result)
+  execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf ${CMAKE_CURRENT_BINARY_DIR}/cfe-${llvm_version}.tar.xz WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
   set(clang_md5 133c6719e22bfded74fcaf1d3092e979)
   ExternalProject_Add(clang
-    URL https://github.com/llvm/llvm-project/releases/download/llvmorg-${llvm_folder}/clang-${llvm_version}.src.tar.xz
-    URL_MD5 ${clang_md5}
     DEPENDS llvm
-    SOURCE_DIR ${CMAKE_CURRENT_BINARY_DIR}/cfe-${llvm_version}
+    SOURCE_DIR ${CMAKE_CURRENT_BINARY_DIR}/clang-${llvm_version}.src
     CMAKE_ARGS -Wno-dev
     CMAKE_GENERATOR "${CMAKE_GENERATOR}"
     CMAKE_CACHE_ARGS
