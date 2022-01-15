@@ -51,9 +51,9 @@ if(USE_SYSTEM_LLVM)
   set(castxml_deps)
 else()
 
-  set(llvm_version 11.1.0)
-  set(llvm_folder 11.1.0)
-  set(llvm_md5 69bc06661ce8f1872e27b40ff96002b2)
+  set(llvm_version 13.0.0)
+  set(llvm_folder 13.0.0)
+  set(llvm_md5 8c24626dce3ee9d87d1079ebf0897db5)
   ExternalProject_Add(llvm
     URL https://github.com/llvm/llvm-project/releases/download/llvmorg-${llvm_folder}/llvm-${llvm_version}.src.tar.xz
     URL_MD5 ${llvm_md5}
@@ -81,7 +81,7 @@ else()
     )
 
 
-  set(clang_md5 133c6719e22bfded74fcaf1d3092e979)
+  set(clang_md5 020cbac6e5786094fe4f96f72e290763)
   ExternalProject_Add(clang
     URL https://github.com/llvm/llvm-project/releases/download/llvmorg-${llvm_folder}/clang-${llvm_version}.src.tar.xz
     URL_MD5 ${clang_md5}
