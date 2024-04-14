@@ -42,18 +42,22 @@ jobs:
               cd build/castxml-prefix/src/castxml-build
               ctest --output-on-failure
 
-        - name: Archive
+        - name: Create archive for Windows
+          if: matrix.os == 'windows-2022'
           shell: cmd
           run: |
               cd build
-              if [[ "${{ runner.os }}" == "Windows" ]]; then
-                  7z a castxml-windows.zip castxml
-                  mv castxml-windows.zip ..
-              else
-                  tar cvf castxml-${{ matrix.os }}.tar castxml
-                  gzip -9 castxml-${{ matrix.os }}.tar
-                  mv castxml-${{ matrix.os }}.tar.gz ..
-              fi
+              7z a castxml-windows.zip castxml
+              move castxml-windows.zip ..
+
+        - name: Create archive for macOS and Ubuntu
+          if: matrix.os != 'windows-2022'
+          shell: bash
+          run: |
+              cd build
+              tar cvf castxml-${{ matrix.os }}.tar castxml
+              gzip -9 castxml-${{ matrix.os }}.tar
+              mv castxml-${{ matrix.os }}.tar.gz ..
 
         - name: Upload artifact
           uses: actions/upload-artifact@v4
