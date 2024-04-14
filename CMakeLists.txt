@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.20)
 
 project(CastXMLSuperbuild NONE)
 # Set a default build type if none was specified
@@ -12,31 +12,23 @@ enable_language(C)
 enable_language(CXX)
 
 
-# Use a static runtime with MSVC
-if(MSVC)
-  foreach(flag
-    CMAKE_CXX_FLAGS
-    CMAKE_CXX_FLAGS_RELEASE
-    CMAKE_C_FLAGS
-    CMAKE_C_FLAGS_RELEASE
-    )
-    if(${flag} MATCHES "/MD")
-      string(REGEX REPLACE "/MD" "/MT" ${flag} "${${flag}}")
-    endif()
-  endforeach()
-else()
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
-endif()
+set(CMAKE_CXX_STANDARD "17")
 
 
 if(APPLE)
   set(osx_args
-    -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.9
+    -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.11
     )
 endif()
 
 
 include(ExternalProject)
+
+if(${CMAKE_VERSION} VERSION_LESS 3.24)
+  set(download_extract_timestamp_flag)
+else()
+  set(download_extract_timestamp_flag DOWNLOAD_EXTRACT_TIMESTAMP TRUE)
+endif()
 
 find_program(NINJA_EXECUTABLE ninja)
 if(NINJA_EXECUTABLE)
@@ -51,74 +43,87 @@ if(USE_SYSTEM_LLVM)
   set(castxml_deps)
 else()
 
-  set(llvm_version 13.0.0)
-  set(llvm_folder 13.0.0)
-  set(llvm_md5 8c24626dce3ee9d87d1079ebf0897db5)
+  set(llvm_version 18.1.3)
+  set(llvm_folder 18.1.3)
+  set(LLVM_DIR ${CMAKE_CURRENT_BINARY_DIR}/llvm/lib/cmake/llvm/)
+
+  set(llvm_cmake_sha256 acfecb615d41c5b1a0a31e15324994ca06f7a3f37d8958d719b20de0d217b71b)
+  ExternalProject_Add(llvm-cmake
+    URL "https://github.com/llvm/llvm-project/releases/download/llvmorg-${llvm_folder}/cmake-${llvm_version}.src.tar.xz"
+    URL_HASH SHA256=${llvm_cmake_sha256}
+    CONFIGURE_COMMAND ""
+    BUILD_COMMAND ""
+    INSTALL_COMMAND ""
+    ${download_extract_timestamp_flag}
+    LOG_BUILD 0
+    SOURCE_DIR ${CMAKE_CURRENT_BINARY_DIR}/llvm-prefix/src/cmake
+    )
+
+  set(llvm_sha256 fa6db8951f5ef576ac6bad43d5e1ed83962754538c998fbfa0397cd4521abc00)
   ExternalProject_Add(llvm
-    URL https://github.com/llvm/llvm-project/releases/download/llvmorg-${llvm_folder}/llvm-${llvm_version}.src.tar.xz
-    URL_MD5 ${llvm_md5}
+    URL "https://github.com/llvm/llvm-project/releases/download/llvmorg-${llvm_folder}/llvm-${llvm_version}.src.tar.xz"
+    URL_HASH SHA256=${llvm_sha256}
+    DEPENDS llvm-cmake
     CMAKE_ARGS -Wno-dev
     CMAKE_GENERATOR "${CMAKE_GENERATOR}"
     CMAKE_CACHE_ARGS
       -DCMAKE_CXX_COMPILER:FILEPATH=${CMAKE_CXX_COMPILER}
-      "-DCMAKE_CXX_FLAGS:STRING=${CMAKE_CXX_FLAGS} -w"
-      "-DCMAKE_CXX_FLAGS_RELEASE:STRING=${CMAKE_CXX_FLAGS_RELEASE}"
+      -DCMAKE_CXX_STANDARD:STRING=${CMAKE_CXX_STANDARD}
       -DCMAKE_C_COMPILER:FILEPATH=${CMAKE_C_COMPILER}
-      "-DCMAKE_C_FLAGS:STRING=${CMAKE_C_FLAGS} -w"
-      "-DCMAKE_C_FLAGS_RELEASE:STRING=${CMAKE_C_FLAGS_RELEASE}"
+      -DLLVM_STATIC_LINK_CXX_STDLIB:BOOL=ON
       -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
-      -DLLVM_USE_CRT_RELEASE:STRING=MT
       -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+      -DLLVM_INSTALL_PREFIX:PATH=<INSTALL_DIR>
       -DLLVM_ENABLE_TERMINFO:BOOL=OFF
       -DLLVM_INCLUDE_TESTS:BOOL=OFF
-      -DLLVM_INCLUDE_EXAMPLES:BOOL=OFF
+      -DLLVM_INCLUDE_BENCHMARKS:BOOL=OFF
       -DLLVM_INCLUDE_DOCS:BOOL=OFF
       -DLLVM_TEMPORARILY_ALLOW_OLD_TOOLCHAIN:BOOL=ON
       ${osx_args}
     ${verbose_command}
+    ${download_extract_timestamp_flag}
     LOG_BUILD 0
     INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR}/llvm
     )
 
 
-  set(clang_md5 020cbac6e5786094fe4f96f72e290763)
+  set(clang_sha256 e43e1729713ac0241aa026fa2f98bb54e74a196a6fed60ab4819134a428eb6d8)
   ExternalProject_Add(clang
-    URL https://github.com/llvm/llvm-project/releases/download/llvmorg-${llvm_folder}/clang-${llvm_version}.src.tar.xz
-    URL_MD5 ${clang_md5}
+    URL "https://github.com/llvm/llvm-project/releases/download/llvmorg-${llvm_folder}/clang-${llvm_version}.src.tar.xz"
+    URL_HASH SHA256=${clang_sha256}
     DEPENDS llvm
-    SOURCE_DIR ${CMAKE_CURRENT_BINARY_DIR}/cfe-${llvm_version}
+    SOURCE_DIR ${CMAKE_CURRENT_BINARY_DIR}/llvm-prefix/src/cfe-${llvm_version}
     CMAKE_ARGS -Wno-dev
     CMAKE_GENERATOR "${CMAKE_GENERATOR}"
     CMAKE_CACHE_ARGS
       -DCMAKE_CXX_COMPILER:FILEPATH=${CMAKE_CXX_COMPILER}
-      "-DCMAKE_CXX_FLAGS:STRING=${CMAKE_CXX_FLAGS} -w"
-      "-DCMAKE_CXX_FLAGS_RELEASE:STRING=${CMAKE_CXX_FLAGS_RELEASE}"
+      -DCMAKE_CXX_STANDARD:STRING=${CMAKE_CXX_STANDARD}
       -DCMAKE_C_COMPILER:FILEPATH=${CMAKE_C_COMPILER}
-      "-DCMAKE_C_FLAGS:STRING=${CMAKE_C_FLAGS} -w"
-      "-DCMAKE_C_FLAGS_RELEASE:STRING=${CMAKE_C_FLAGS_RELEASE}"
       -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
       -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
       -DCLANG_INCLUDE_DOCS:BOOL=OFF
       -DCLANG_INCLUDE_TESTS:BOOL=OFF
+      -DLLVM_INCLUDE_TESTS:BOOL=OFF
       -DLLVM_CONFIG:PATH=${CMAKE_CURRENT_BINARY_DIR}/llvm/bin/llvm-config
+      -DLLVM_DIR:PATH=${LLVM_DIR}
       -DLLVM_TEMPORARILY_ALLOW_OLD_TOOLCHAIN:BOOL=ON
       ${osx_args}
     ${verbose_command}
+    ${download_extract_timestamp_flag}
     LOG_BUILD 0
     INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR}/llvm
     )
 
   set(castxml_deps llvm clang)
-  set(LLVM_DIR ${CMAKE_CURRENT_BINARY_DIR}/llvm/lib/cmake/llvm/)
 endif()
 
 
 # Use a static C++ library on GCC/Linux
 if(CMAKE_COMPILER_IS_GNUCXX AND CMAKE_SYSTEM_NAME MATCHES "Linux")
-  set(extra_flags "-static-libstdc++")
+  set(linux_args "-DCMAKE_CXX_FLAGS:STRING=-static-libstdc++")
 endif()
-# 2022-12-06 master
-set(CastXML_GIT_TAG v0.5.0 CACHE STRING "CastXML Git revision.")
+# 2024-04-12 master
+set(CastXML_GIT_TAG v0.6.5 CACHE STRING "CastXML Git revision.")
 ExternalProject_Add(castxml
   GIT_REPOSITORY https://github.com/CastXML/CastXML.git
   GIT_TAG ${CastXML_GIT_TAG}
@@ -127,15 +132,13 @@ ExternalProject_Add(castxml
   CMAKE_GENERATOR "${CMAKE_GENERATOR}"
   CMAKE_CACHE_ARGS
     -DCMAKE_CXX_COMPILER:FILEPATH=${CMAKE_CXX_COMPILER}
-    "-DCMAKE_CXX_FLAGS:STRING=${CMAKE_CXX_FLAGS} -w ${extra_flags}"
-    "-DCMAKE_CXX_FLAGS_RELEASE:STRING=${CMAKE_CXX_FLAGS_RELEASE}"
+    -DCMAKE_CXX_STANDARD:STRING=${CMAKE_CXX_STANDARD}
     -DCMAKE_C_COMPILER:FILEPATH=${CMAKE_C_COMPILER}
-    "-DCMAKE_C_FLAGS:STRING=${CMAKE_C_FLAGS} -w"
-    "-DCMAKE_C_FLAGS_RELEASE:STRING=${CMAKE_C_FLAGS_RELEASE}"
     -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
     -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
     -DLLVM_DIR:PATH=${LLVM_DIR}
     ${osx_args}
+    ${linux_args}
   ${verbose_command}
   LOG_BUILD 0
   INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR}/castxml
