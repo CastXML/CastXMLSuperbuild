@@ -43,6 +43,7 @@ jobs:
               ctest --output-on-failure
 
         - name: Archive
+          shell: cmd
           run: |
               cd build
               if [[ "${{ runner.os }}" == "Windows" ]]; then
