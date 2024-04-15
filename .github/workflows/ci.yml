@@ -47,8 +47,8 @@ jobs:
           shell: cmd
           run: |
               cd build
-              7z a castxml-windows.zip castxml
-              move castxml-windows.zip ..
+              7z a castxml-${{ matrix.os }}.zip castxml
+              move castxml-${{ matrix.os }}.zip ..
 
         - name: Create archive for macOS and Ubuntu
           if: matrix.os != 'windows-2022'
