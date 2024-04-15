@@ -21,8 +21,8 @@ Visual Studio on Windows, can be installed on macOS with `brew install ninja`,
 and can be installed with the `ninja-build` package in most Linux package
 managers.
 
-The resulting [castxml]{.title-ref} executable will be located at
-[CastXMLSuperbuild-build/castxml/bin/castxml]{.title-ref}.
+The resulting `castxml` executable will be located at
+*CastXMLSuperbuild-build/castxml/bin/castxml*.
 
 The resulting binary builds for Linux, Mac OSX, and Windows [are
 available
