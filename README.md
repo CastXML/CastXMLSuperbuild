@@ -26,4 +26,4 @@ The resulting `castxml` executable will be located at
 
 The resulting binary builds for Linux, Mac OSX, and Windows [are
 available
-here](https://data.kitware.com/#collection/57b5c9e58d777f126827f5a1/folder/57b5de948d777f10f2696370).
+here](https://github.com/CastXML/CastXMLSuperbuild/releases).
