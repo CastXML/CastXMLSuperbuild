@@ -12,7 +12,7 @@ jobs:
     build:
         strategy:
             matrix:
-                os: [ubuntu-22.04, macos-12, macos-14, windows-2022]
+                os: [ubuntu-24.04, ubuntu-22.04, ubuntu-24.04-arm, ubuntu-22.04-arm, macos-15, macos-14, windows-2025]
 
         runs-on: ${{ matrix.os }}
 
@@ -30,13 +30,13 @@ jobs:
               fi
 
         - name: Build
-          if: matrix.os != 'windows-2022'
+          if: matrix.os != 'windows-2025'
           run: |
             cmake -Bbuild -S. -GNinja
             ninja -Cbuild
 
         - name: Build
-          if: matrix.os == 'windows-2022'
+          if: matrix.os == 'windows-2025'
           shell: cmd
           run: |
             call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
@@ -49,7 +49,7 @@ jobs:
               ctest --output-on-failure
 
         - name: Create archive for Windows
-          if: matrix.os == 'windows-2022'
+          if: matrix.os == 'windows-2025'
           shell: cmd
           run: |
               cd build
@@ -57,7 +57,7 @@ jobs:
               move castxml-${{ matrix.os }}.zip ..
 
         - name: Create archive for macOS and Ubuntu
-          if: matrix.os != 'windows-2022'
+          if: matrix.os != 'windows-2025'
           shell: bash
           run: |
               cd build
