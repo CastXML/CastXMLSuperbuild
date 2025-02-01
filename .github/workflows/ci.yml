@@ -1,72 +1,115 @@
-name: CI
+name: Multi-Arch CI
 
 on:
   push:
-    branches:
-      - master
+    branches: ["master"]
   pull_request:
-    branches:
-      - master
+    branches: ["master"]
 
 jobs:
-    build:
-        strategy:
-            matrix:
-                os: [ubuntu-24.04, ubuntu-22.04, ubuntu-24.04-arm, ubuntu-22.04-arm, macos-15, macos-13, windows-2025]
+  build:
+    name: Build (${{ matrix.os }} - ${{ matrix.arch }})
+    runs-on: ${{ matrix.runs-on }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Linux
+          - os: ubuntu-22.04
+            arch: x86_64
+            runs-on: ubuntu-22.04
+          - os: ubuntu-22.04
+            arch: aarch64
+            runs-on: ubuntu-22.04-arm
+          - os: ubuntu-24.04
+            arch: x86_64
+            runs-on: ubuntu-24.04
+          - os: ubuntu-24.04
+            arch: aarch64
+            runs-on: ubuntu-24.04-arm
+          # macOS
+          - os: macos-13
+            arch: x86_64
+            runs-on: macos-13
+          - os: macos-15
+            arch: arm64
+            runs-on: macos-15
+          # Windows
+          - os: windows-2022
+            arch: x86_64
+            runs-on: windows-2022
+          - os: windows-2025
+            arch: x86_64
+            runs-on: windows-2025
 
-        runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-        steps:
-        - uses: actions/checkout@v4
+      #########################
+      # Dependencies Installation
+      #########################
+      - name: Install LLVM and Dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+          sudo add-apt-repository -y "deb http://apt.llvm.org/$(lsb_release -cs)/ llvm-toolchain-$(lsb_release -cs)-18 main"
+          sudo apt-get update
+          sudo apt-get install -y curl clang-18 lld-18 llvm-18-dev libclang-18-dev ninja-build cmake libxml2-dev
+      - name: Install LLVM and Dependencies (macOS)
+        if: runner.os == 'macos'
+        run: |
+          brew update
+          brew install curl llvm libxml2 cmake ninja
+          # Add LLVM’s bin directory to PATH so that CMake and tools can find LLVM 18.
+          echo "$(brew --prefix llvm)/bin" >> $GITHUB_PATH
+      - name: Install LLVM and Clang (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          choco install curl llvm cmake -y
+      - name: 🧳 Setup MSVC (Windows)
+        if: runner.os == 'Windows'
+        uses: microsoft/setup-msbuild@v2
+      # Configure the Project with CMake
+      #########################
+      - name: Configure CMake (Non-Windows)
+        if: runner.os != 'Windows'
+        run: |
+          cmake -B build -S . -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin
+      - name: Configure CMake (Windows)
+        if: runner.os == 'Windows'
+        shell: cmd
+        run: |
+          cmake -B build -S . -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin
+          ninja -C build
+      #########################
+      # Build and Test
+      #########################
+      - name: Build Project
+        if: runner.os != 'Windows'
+        run: ninja -C build
 
-        - name: Install ninja
-          shell: bash
-          run: |
-              if [[ "${{ runner.os }}" == "macOS" ]]; then
-                  brew install ninja
-              elif [[ "${{ runner.os }}" == "Linux" ]]; then
-                  sudo apt-get -y update
-                  sudo apt-get -y install ninja-build
-              fi
+      - name: Run Tests
+        run: ctest --test-dir build --output-on-failure
 
-        - name: Build
-          if: matrix.os != 'windows-2025'
-          run: |
-            cmake -Bbuild -S. -GNinja
-            ninja -Cbuild
-
-        - name: Build
-          if: matrix.os == 'windows-2025'
-          shell: cmd
-          run: |
-            call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
-            cmake -Bbuild -S. -GNinja
-            ninja -Cbuild
-
-        - name: Test
-          run: |
-              cd build/castxml-prefix/src/castxml-build
-              ctest --output-on-failure
-
-        - name: Create archive for Windows
-          if: matrix.os == 'windows-2025'
-          shell: cmd
-          run: |
-              cd build
-              7z a castxml-${{ matrix.os }}.zip castxml
-              move castxml-${{ matrix.os }}.zip ..
-
-        - name: Create archive for macOS and Ubuntu
-          if: matrix.os != 'windows-2025'
-          shell: bash
-          run: |
-              cd build
-              tar cvf castxml-${{ matrix.os }}.tar castxml
-              gzip -9 castxml-${{ matrix.os }}.tar
-              mv castxml-${{ matrix.os }}.tar.gz ..
-
-        - name: Upload artifact
-          uses: actions/upload-artifact@v4
-          with:
-              name: ${{ matrix.os }}-archive
-              path: ./castxml-${{ matrix.os }}.*
+      #########################
+      # Artifact Packaging
+      #########################
+      - name: Create Artifact (Linux/macOS)
+        if: runner.os != 'Windows'
+        run: |
+          cd build/bin
+          tar czvf ../../castxml-${{ matrix.os }}-${{ matrix.arch }}.tar.gz castxml
+      - name: Create Artifact (Windows)
+        if: runner.os == 'Windows'
+        shell: cmd
+        run: |
+          cd build\bin
+          7z a ..\..\castxml-${{ matrix.os }}-${{ matrix.arch }}.zip castxml.exe
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: castxml-${{ matrix.os }}-${{ matrix.arch }}
+          path: castxml-${{ matrix.os }}-${{ matrix.arch }}.*
