@@ -3,7 +3,7 @@
 set -e -x -o pipefail
 
 
-dockcross_version=latest
+dockcross_version=20250109-7bf589c
 
 podman pull docker.io/dockcross/manylinux_2_28-x64:$dockcross_version
 podman run --rm docker.io/dockcross/manylinux_2_28-x64:$dockcross_version > ./dockcross-x64
