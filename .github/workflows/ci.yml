@@ -1,72 +1,107 @@
-name: CI
+name: Multi-Arch CI
 
 on:
   push:
-    branches:
-      - master
+    branches: ["master"]
   pull_request:
-    branches:
-      - master
+    branches: ["master"]
 
 jobs:
-    build:
-        strategy:
-            matrix:
-                os: [ubuntu-22.04, macos-12, macos-14, windows-2022]
+  build:
+    name: Build (OS=${{ matrix.os }}, Arch=${{ matrix.arch }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-24.04, ubuntu-22.04, macos-15 ]
+        arch: [ x86_64 ]
+        include:
+          - os: ubuntu-24.04-arm
+            arch: aarch64
+          - os: ubuntu-22.04-arm
+            arch: aarch64
+          - os: macos-15
+            arch: arm64
+          - os: windows-2025
+            arch: amd64
 
-        runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-        steps:
-        - uses: actions/checkout@v4
+      #####################################
+      # Dependencies Installation (Optional)
+      #####################################
 
-        - name: Install ninja
-          shell: bash
-          run: |
-              if [[ "${{ runner.os }}" == "macOS" ]]; then
-                  brew install ninja
-              elif [[ "${{ runner.os }}" == "Linux" ]]; then
-                  sudo apt-get -y update
-                  sudo apt-get -y install ninja-build
-              fi
+      # Linux dependencies
+      - name: Install dependencies (Linux)
+        if: startsWith(matrix.os, 'ubuntu')
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential ninja-build cmake git
+          # If you need system LLVM for something else:
+          # sudo apt-get install -y clang lld llvm-dev libclang-dev
 
-        - name: Build
-          if: matrix.os != 'windows-2022'
-          run: |
-            cmake -Bbuild -S. -GNinja
-            ninja -Cbuild
+      # macOS dependencies
+      - name: Install dependencies (macOS)
+        if: startsWith(matrix.os, 'macos')
+        run: |
+          brew update
+          brew install ninja cmake git
 
-        - name: Build
-          if: matrix.os == 'windows-2022'
-          shell: cmd
-          run: |
-            call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
-            cmake -Bbuild -S. -GNinja
-            ninja -Cbuild
+      # Windows dependencies
+      - name: Install dependencies (Windows)
+        if: startsWith(matrix.os, 'windows')
+        shell: pwsh
+        run: |
+          choco install ninja cmake git -y
+      - name: Setup MSBuild (Windows)
+        if: startsWith(matrix.os, 'windows')
+        uses: microsoft/setup-msbuild@v2
 
-        - name: Test
-          run: |
-              cd build/castxml-prefix/src/castxml-build
-              ctest --output-on-failure
+      #####################################
+      # Configure the Superbuild
+      #####################################
+      - name: Configure
+        run: |
+          cmake -B build -S . -GNinja -DCMAKE_BUILD_TYPE=Release
+        shell: bash
 
-        - name: Create archive for Windows
-          if: matrix.os == 'windows-2022'
-          shell: cmd
-          run: |
-              cd build
-              7z a castxml-${{ matrix.os }}.zip castxml
-              move castxml-${{ matrix.os }}.zip ..
+      #####################################
+      # Build the Superbuild
+      #####################################
+      - name: Build
+        run: cmake --build build --config Release
 
-        - name: Create archive for macOS and Ubuntu
-          if: matrix.os != 'windows-2022'
-          shell: bash
-          run: |
-              cd build
-              tar cvf castxml-${{ matrix.os }}.tar castxml
-              gzip -9 castxml-${{ matrix.os }}.tar
-              mv castxml-${{ matrix.os }}.tar.gz ..
+      #####################################
+      # [Optional] Run Tests
+      #####################################
+      - name: Test
+        run: |
+            cd build/castxml-prefix/src/castxml-build
+            ctest --output-on-failure
 
-        - name: Upload artifact
-          uses: actions/upload-artifact@v4
-          with:
-              name: ${{ matrix.os }}-archive
-              path: ./castxml-${{ matrix.os }}.*
+      #####################################
+      # Package the resulting castxml binary
+      #####################################
+      - name: Create Artifact (Windows)
+        if: startsWith(matrix.os, 'windows')
+        shell: cmd
+        run: |
+          cd build\castxml\bin
+          7z a ..\..\castxml-${{ matrix.os }}-${{ matrix.arch }}.zip castxml.exe
+
+      - name: Create Artifact (Non-Windows)
+        if: startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'macos')
+        shell: bash
+        run: |
+          cd build/castxml/bin
+          tar czvf ../../castxml-${{ matrix.os }}-${{ matrix.arch }}.tar.gz castxml
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: castxml-${{ matrix.os }}-${{ matrix.arch }}
+          path: |
+            build/castxml-*.tar.gz
+            build/castxml-*.zip
