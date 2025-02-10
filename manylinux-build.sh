@@ -3,10 +3,10 @@
 set -e -x -o pipefail
 
 
-dockcross_version=20240404-2c6c0a5
+dockcross_version=20250109-7bf589c
 
-podman pull docker.io/dockcross/manylinux2014-x64:$dockcross_version
-podman run --rm docker.io/dockcross/manylinux2014-x64:$dockcross_version > ./dockcross-x64
+podman pull docker.io/dockcross/manylinux_2_28-x64:$dockcross_version
+podman run --rm docker.io/dockcross/manylinux_2_28-x64:$dockcross_version > ./dockcross-x64
 chmod +x ./dockcross-x64
 
 ./dockcross-x64 cmake -Bbuild -S. -GNinja
@@ -19,7 +19,7 @@ popd
 rm -rf build
 
 
-manylinux_version=2024-04-02-96b33b9
+manylinux_version=2025.01.24-1
 
 cat << EOF
 
@@ -32,5 +32,5 @@ once before running the following commands on an amd64 system.
 
 EOF
 
-podman pull quay.io/pypa/manylinux2014_aarch64:$manylinux_version
-podman run -it --rm -v $(pwd):/work quay.io/pypa/manylinux2014_aarch64:$manylinux_version /work/manylinux-internal.sh
+podman pull quay.io/pypa/manylinux_2_28_aarch64:$manylinux_version
+podman run -it --rm -v $(pwd):/work quay.io/pypa/manylinux_2_28_aarch64:$manylinux_version /work/manylinux-internal.sh
