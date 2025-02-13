@@ -89,20 +89,21 @@ jobs:
         if: startsWith(matrix.os, 'windows')
         shell: cmd
         run: |
-          cd build\castxml\bin
-          7z a ..\..\castxml-${{ matrix.os }}-${{ matrix.arch }}.zip castxml.exe
+          cd build
+          7z a castxml-${{ matrix.os }}-${{ matrix.arch }}.zip castxml
+          move castxml-${{ matrix.os }}-${{ matrix.arch }}.zip ..
 
       - name: Create Artifact (Non-Windows)
         if: startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'macos')
         shell: bash
         run: |
-          cd build/castxml/bin
-          tar czvf ../../castxml-${{ matrix.os }}-${{ matrix.arch }}.tar.gz castxml
+          cd build
+          tar cvf castxml-${{ matrix.os }}-${{ matrix.arch }}.tar castxml
+          gzip -9 castxml-${{ matrix.os }}-${{ matrix.arch }}.tar
+          mv castxml-${{ matrix.os }}-${{ matrix.arch }}.tar.gz ..
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: castxml-${{ matrix.os }}-${{ matrix.arch }}
-          path: |
-            build/castxml-*.tar.gz
-            build/castxml-*.zip
+          path: ./castxml-${{ matrix.os }}-${{ matrix.arch }}.*
