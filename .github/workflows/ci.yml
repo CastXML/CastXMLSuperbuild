@@ -64,14 +64,15 @@ jobs:
       #####################################
       - name: Configure
         run: |
-          cmake -B build -S . -GNinja -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF
+          cmake -B build -S . -GNinja
         shell: bash
 
       #####################################
       # Build the Superbuild
       #####################################
       - name: Build
-        run: cmake --build build --config Release
+        run: ninja -C build
+        shell: bash
 
       #####################################
       # [Optional] Run Tests
