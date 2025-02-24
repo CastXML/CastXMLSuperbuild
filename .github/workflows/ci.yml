@@ -13,13 +13,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-24.04, ubuntu-22.04, macos-15 ]
+        os: [ ubuntu-24.04, ubuntu-22.04]
         arch: [ x86_64 ]
         include:
           - os: ubuntu-24.04-arm
             arch: aarch64
           - os: ubuntu-22.04-arm
             arch: aarch64
+          - os: macos-13
+            arch: x86_64
           - os: macos-15
             arch: arm64
           - os: windows-2025
