@@ -43,11 +43,11 @@ if(USE_SYSTEM_LLVM)
   set(castxml_deps)
 else()
 
-  set(llvm_version 18.1.3)
-  set(llvm_folder 18.1.3)
+  set(llvm_version 21.1.0-rc2)
+  set(llvm_folder 21.1.0-rc2)
   set(LLVM_DIR ${CMAKE_CURRENT_BINARY_DIR}/llvm/lib/cmake/llvm/)
 
-  set(llvm_cmake_sha256 acfecb615d41c5b1a0a31e15324994ca06f7a3f37d8958d719b20de0d217b71b)
+  set(llvm_cmake_sha256 29c610b701dd45c8eeb6310bc362975a9266def6a2ab4d6d3b2a27315b82b8d1)
   ExternalProject_Add(llvm-cmake
     URL "https://github.com/llvm/llvm-project/releases/download/llvmorg-${llvm_folder}/cmake-${llvm_version}.src.tar.xz"
     URL_HASH SHA256=${llvm_cmake_sha256}
@@ -59,7 +59,7 @@ else()
     SOURCE_DIR ${CMAKE_CURRENT_BINARY_DIR}/llvm-prefix/src/cmake
     )
 
-  set(llvm_sha256 fa6db8951f5ef576ac6bad43d5e1ed83962754538c998fbfa0397cd4521abc00)
+  set(llvm_sha256 0ab3396037298931fd3300e010f88d2333cddb543591e8906acbac74897d4d9d)
   ExternalProject_Add(llvm
     URL "https://github.com/llvm/llvm-project/releases/download/llvmorg-${llvm_folder}/llvm-${llvm_version}.src.tar.xz"
     URL_HASH SHA256=${llvm_sha256}
@@ -87,7 +87,7 @@ else()
     )
 
 
-  set(clang_sha256 e43e1729713ac0241aa026fa2f98bb54e74a196a6fed60ab4819134a428eb6d8)
+  set(clang_sha256 672a1462cbddf72ae2e331d27886f7414fff67dfb9ea86b1f7bfac40fcf8ee03)
   ExternalProject_Add(clang
     URL "https://github.com/llvm/llvm-project/releases/download/llvmorg-${llvm_folder}/clang-${llvm_version}.src.tar.xz"
     URL_HASH SHA256=${clang_sha256}
