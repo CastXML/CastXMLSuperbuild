@@ -47,6 +47,19 @@ else()
   set(llvm_folder 21.1.8)
   set(LLVM_DIR ${CMAKE_CURRENT_BINARY_DIR}/llvm/lib/cmake/llvm/)
 
+  set(llvm_thirdparty_sha256 7fe99424384aea529ffaeec9cc9dfb8b451fd1852c03fc109e426fe208a1f1a7)
+  ExternalProject_Add(llvm-third-party
+    URL "https://github.com/llvm/llvm-project/releases/download/llvmorg-${llvm_folder}/third-party-${llvm_version}.src.tar.xz"
+    URL_HASH SHA256=${llvm_thirdparty_sha256}
+    CONFIGURE_COMMAND ""
+    BUILD_COMMAND ""
+    INSTALL_COMMAND ""
+    ${download_extract_timestamp_flag}
+    LOG_BUILD 0
+    SOURCE_DIR ${CMAKE_CURRENT_BINARY_DIR}/llvm-prefix/src/third-party
+    )
+
+
   set(llvm_cmake_sha256 85735f20fd8c81ecb0a09abb0c267018475420e93b65050cc5b7634eab744de9)
   ExternalProject_Add(llvm-cmake
     URL "https://github.com/llvm/llvm-project/releases/download/llvmorg-${llvm_folder}/cmake-${llvm_version}.src.tar.xz"
@@ -63,7 +76,7 @@ else()
   ExternalProject_Add(llvm
     URL "https://github.com/llvm/llvm-project/releases/download/llvmorg-${llvm_folder}/llvm-${llvm_version}.src.tar.xz"
     URL_HASH SHA256=${llvm_sha256}
-    DEPENDS llvm-cmake
+    DEPENDS llvm-cmake llvm-third-party
     CMAKE_ARGS -Wno-dev
     CMAKE_GENERATOR "${CMAKE_GENERATOR}"
     CMAKE_CACHE_ARGS
