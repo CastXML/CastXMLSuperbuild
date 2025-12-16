@@ -2,11 +2,12 @@
 
 set -e -x -o pipefail
 
+OCI_EXE=${OCI_EXE:=podman}
 
 dockcross_version=20250109-7bf589c
 
-podman pull docker.io/dockcross/manylinux_2_28-x64:$dockcross_version
-podman run --rm docker.io/dockcross/manylinux_2_28-x64:$dockcross_version > ./dockcross-x64
+${OCI_EXE} pull docker.io/dockcross/manylinux_2_28-x64:$dockcross_version
+${OCI_EXE} run --rm docker.io/dockcross/manylinux_2_28-x64:$dockcross_version > ./dockcross-x64
 chmod +x ./dockcross-x64
 
 ./dockcross-x64 cmake -Bbuild -S. -GNinja
@@ -32,5 +33,5 @@ once before running the following commands on an amd64 system.
 
 EOF
 
-podman pull quay.io/pypa/manylinux_2_28_aarch64:$manylinux_version
-podman run -it --rm -v $(pwd):/work quay.io/pypa/manylinux_2_28_aarch64:$manylinux_version /work/manylinux-internal.sh
+${OCI_EXE} pull quay.io/pypa/manylinux_2_28_aarch64:$manylinux_version
+${OCI_EXE} run -it --rm -v $(pwd):/work quay.io/pypa/manylinux_2_28_aarch64:$manylinux_version /work/manylinux-internal.sh
