@@ -43,11 +43,24 @@ if(USE_SYSTEM_LLVM)
   set(castxml_deps)
 else()
 
-  set(llvm_version 18.1.3)
-  set(llvm_folder 18.1.3)
+  set(llvm_version 21.1.8)
+  set(llvm_folder 21.1.8)
   set(LLVM_DIR ${CMAKE_CURRENT_BINARY_DIR}/llvm/lib/cmake/llvm/)
 
-  set(llvm_cmake_sha256 acfecb615d41c5b1a0a31e15324994ca06f7a3f37d8958d719b20de0d217b71b)
+  set(llvm_thirdparty_sha256 7fe99424384aea529ffaeec9cc9dfb8b451fd1852c03fc109e426fe208a1f1a7)
+  ExternalProject_Add(llvm-third-party
+    URL "https://github.com/llvm/llvm-project/releases/download/llvmorg-${llvm_folder}/third-party-${llvm_version}.src.tar.xz"
+    URL_HASH SHA256=${llvm_thirdparty_sha256}
+    CONFIGURE_COMMAND ""
+    BUILD_COMMAND ""
+    INSTALL_COMMAND ""
+    ${download_extract_timestamp_flag}
+    LOG_BUILD 0
+    SOURCE_DIR ${CMAKE_CURRENT_BINARY_DIR}/llvm-prefix/src/third-party
+    )
+
+
+  set(llvm_cmake_sha256 85735f20fd8c81ecb0a09abb0c267018475420e93b65050cc5b7634eab744de9)
   ExternalProject_Add(llvm-cmake
     URL "https://github.com/llvm/llvm-project/releases/download/llvmorg-${llvm_folder}/cmake-${llvm_version}.src.tar.xz"
     URL_HASH SHA256=${llvm_cmake_sha256}
@@ -59,11 +72,11 @@ else()
     SOURCE_DIR ${CMAKE_CURRENT_BINARY_DIR}/llvm-prefix/src/cmake
     )
 
-  set(llvm_sha256 fa6db8951f5ef576ac6bad43d5e1ed83962754538c998fbfa0397cd4521abc00)
+  set(llvm_sha256 d9022ddadb40a15015f6b27e6549a7144704ded8828ba036ffe4b8165707de21)
   ExternalProject_Add(llvm
     URL "https://github.com/llvm/llvm-project/releases/download/llvmorg-${llvm_folder}/llvm-${llvm_version}.src.tar.xz"
     URL_HASH SHA256=${llvm_sha256}
-    DEPENDS llvm-cmake
+    DEPENDS llvm-cmake llvm-third-party
     CMAKE_ARGS -Wno-dev
     CMAKE_GENERATOR "${CMAKE_GENERATOR}"
     CMAKE_CACHE_ARGS
@@ -76,8 +89,10 @@ else()
       -DLLVM_INSTALL_PREFIX:PATH=<INSTALL_DIR>
       -DLLVM_ENABLE_TERMINFO:BOOL=OFF
       -DLLVM_INCLUDE_TESTS:BOOL=OFF
+      -DLLVM_INCLUDE_EXAMPLES:BOOL=OFF
       -DLLVM_INCLUDE_BENCHMARKS:BOOL=OFF
       -DLLVM_INCLUDE_DOCS:BOOL=OFF
+      -DLLVM_ENABLE_OCAMLDOC:BOOL=OFF
       -DLLVM_TEMPORARILY_ALLOW_OLD_TOOLCHAIN:BOOL=ON
       ${osx_args}
     ${verbose_command}
@@ -87,7 +102,7 @@ else()
     )
 
 
-  set(clang_sha256 e43e1729713ac0241aa026fa2f98bb54e74a196a6fed60ab4819134a428eb6d8)
+  set(clang_sha256 6090e3f23720d003cdd84483a47d0eec6d01adbb5e0c714ac0c8b58de546aa62)
   ExternalProject_Add(clang
     URL "https://github.com/llvm/llvm-project/releases/download/llvmorg-${llvm_folder}/clang-${llvm_version}.src.tar.xz"
     URL_HASH SHA256=${clang_sha256}
@@ -122,8 +137,8 @@ endif()
 if(CMAKE_COMPILER_IS_GNUCXX AND CMAKE_SYSTEM_NAME MATCHES "Linux")
   set(linux_args "-DCMAKE_CXX_FLAGS:STRING=-static-libstdc++")
 endif()
-# 2025-08-30 master
-set(CastXML_GIT_TAG v0.6.13 CACHE STRING "CastXML Git revision.")
+# 2025-12-11 master
+set(CastXML_GIT_TAG bca6af13daf298f6d63bf2e4d4488c11c7e99b22  CACHE STRING "CastXML Git revision.")
 ExternalProject_Add(castxml
   GIT_REPOSITORY https://github.com/CastXML/CastXML.git
   GIT_TAG ${CastXML_GIT_TAG}
