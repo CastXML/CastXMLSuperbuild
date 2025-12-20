@@ -78,11 +78,16 @@ jobs:
 
       #####################################
       # [Optional] Run Tests
+      # NOTE: -LE LargeStackRequired is used to skip
+      #       running tests on GitHub CI environment that
+      #       has limited stack allowed.
+      #       The fbracket-depth passes outside of GitHub
+      #       but fails inside Github CI
       #####################################
       - name: Test
         run: |
             cd build/castxml-prefix/src/castxml-build
-            ctest --output-on-failure
+            ctest --output-on-failure -LE LargeStackRequired
 
       #####################################
       # Package the resulting castxml binary
