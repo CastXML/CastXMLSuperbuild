@@ -16,8 +16,9 @@ set(CMAKE_CXX_STANDARD "17")
 
 
 if(APPLE)
+  set(CMAKE_OSX_DEPLOYMENT_TARGET 10.11 CACHE STRING "Set the minimum supported OSX target" FORCE)
   set(osx_args
-    -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.11
+    -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=${CMAKE_OSX_DEPLOYMENT_TARGET}
     )
 endif()
 
@@ -94,6 +95,10 @@ else()
       -DLLVM_INCLUDE_DOCS:BOOL=OFF
       -DLLVM_ENABLE_OCAMLDOC:BOOL=OFF
       -DLLVM_TEMPORARILY_ALLOW_OLD_TOOLCHAIN:BOOL=ON
+      # Disable unneeded compression support in llvm
+      -DLLVM_USE_STATIC_ZSTD:BOOL=OFF
+      -DLLVM_ENABLE_ZLIB:BOOL=OFF
+      -DLLVM_ENABLE_ZSTD:BOOL=OFF
       ${osx_args}
     ${verbose_command}
     ${download_extract_timestamp_flag}
@@ -138,9 +143,11 @@ if(CMAKE_COMPILER_IS_GNUCXX AND CMAKE_SYSTEM_NAME MATCHES "Linux")
   set(linux_args "-DCMAKE_CXX_FLAGS:STRING=-static-libstdc++")
 endif()
 # 2025-12-11 master
-set(CastXML_GIT_TAG bca6af13daf298f6d63bf2e4d4488c11c7e99b22  CACHE STRING "CastXML Git revision.")
+set(CastXML_GIT_TAG "216-Followup-MSVC-fix" CACHE STRING "CastXML Git revision." FORCE)
 ExternalProject_Add(castxml
-  GIT_REPOSITORY https://github.com/CastXML/CastXML.git
+  #GIT_REPOSITORY https://github.com/CastXML/CastXML.git
+  # WIP DO NOT COMMIT UNITL AFTER https://github.com/CastXML/CastXML/pull/295 is incorporated.
+  GIT_REPOSITORY https://github.com/hjmjohnson/CastXML.git
   GIT_TAG ${CastXML_GIT_TAG}
   DEPENDS ${castxml_deps}
   CMAKE_ARGS -Wno-dev
