@@ -95,6 +95,10 @@ else()
       -DLLVM_INCLUDE_DOCS:BOOL=OFF
       -DLLVM_ENABLE_OCAMLDOC:BOOL=OFF
       -DLLVM_TEMPORARILY_ALLOW_OLD_TOOLCHAIN:BOOL=ON
+      # Disable unneeded compression support in llvm
+      -DLLVM_USE_STATIC_ZSTD:BOOL=OFF
+      -DLLVM_ENABLE_ZLIB:BOOL=OFF
+      -DLLVM_ENABLE_ZSTD:BOOL=OFF
       ${osx_args}
     ${verbose_command}
     ${download_extract_timestamp_flag}
